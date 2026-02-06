@@ -1,31 +1,116 @@
 /* src/styles/index.css */
+@import './variables.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
-  background: #F8F8F9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+#root {
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* Main content */
 .main-content {
   flex: 1;
   padding: 32px;
+  overflow-y: auto;
+  background-color: var(--secondary-color);
 }
 
-/* Cards generales (puedes mover a MetricCard/TableCard si quieres más encapsulación) */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* Cards generales */
 .metric-card {
   background: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  box-shadow: 0 12px 25px rgba(0,0,0,0.1);
 }
 
 .metric-card h6 {
   color: #6c757d;
   font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.metric-card h3 {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.metric-icon {
+  font-size: 28px;
+  color: var(--primary-color);
 }
 
 .table-card {
   background: #fff;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.table-card h6 {
+  color: var(--text-color);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.table-card table {
+  margin-bottom: 0;
+}
+
+.table-card table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+  font-weight: 600;
+  padding: 12px;
+}
+
+.table-card table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table-card table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 16px;
+  }
+
+  .metric-card {
+    padding: 16px;
+  }
+
+  .table-card {
+    padding: 16px;
+  }
 }

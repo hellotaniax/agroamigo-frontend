@@ -4,15 +4,17 @@ import TableCard from '../../components/TableCard';
 
 import './Dashboard.css';
 import { useState } from 'react';
-import { BiLeaf, BiDroplet, BiLightbulb, BiPeople } from 'react-icons/bi';
+import { BiBulb, BiGroup, BiLeaf, BiDroplet } from 'react-icons/bi';
 
 export default function DashboardPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(true); // controla el sidebar
+
   // Datos de métricas
   const metrics = [
     { title: 'Cultivos activos', value: 18, icon: <BiLeaf /> },
     { title: 'Fertilizantes', value: 12, icon: <BiDroplet /> },
-    { title: 'Recomendaciones', value: 7, icon: <BiLightbulb /> },
-    { title: 'Usuarios', value: 4, icon: <BiPeople /> },
+    { title: 'Recomendaciones', value: 7, icon: <BiBulb /> },
+    { title: 'Usuarios', value: 4, icon: <BiGroup /> },
   ];
 
   // Columnas y datos de la tabla
@@ -25,10 +27,18 @@ export default function DashboardPage() {
   return (
     <div className="d-flex dashboard-container">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar className={sidebarOpen ? '' : 'collapsed'} />
 
       {/* Main content */}
       <main className="main-content">
+        {/* Botón hamburguesa solo en móviles */}
+        <button
+          className="btn btn-light d-md-none mb-3"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          <i className="bi bi-list"></i>
+        </button>
+
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h4 className="fw-semibold">Panel General</h4>

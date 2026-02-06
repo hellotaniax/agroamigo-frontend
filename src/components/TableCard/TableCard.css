@@ -1,39 +1,82 @@
 .table-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.03);
-  transition: transform 0.2s;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
 }
 
-.table-card:hover {
-  transform: translateY(-2px);
+.table-card h6 {
+  color: #212529;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-size: 16px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table-card table {
+  width: 100%;
+  border-collapse: collapse;
   margin-bottom: 0;
 }
 
-.table-card th {
-  color: #6c757d;
+.table-card table thead {
+  background-color: #f8f9fa;
+}
+
+.table-card table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
   font-weight: 600;
+  padding: 1rem 0.75rem;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.table-card td {
-  color: #333;
+.table-card table tbody td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+  color: #495057;
+  font-size: 14px;
 }
 
-.badge.bg-success-subtle {
-  background-color: #d4edda;
-  color: #2d5a27;
+.table-card table tbody tr {
+  transition: background-color 0.2s ease;
 }
 
-.badge.bg-warning-subtle {
-  background-color: #fff3cd;
-  color: #856404;
+.table-card table tbody tr:hover {
+  background-color: #f8f9fa;
 }
 
-.badge.bg-danger-subtle {
-  background-color: #f8d7da;
-  color: #842029;
+.table-card .badge {
+  padding: 0.5rem 0.75rem;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .table-card {
+    padding: 1rem;
+  }
+
+  .table-card h6 {
+    font-size: 14px;
+    margin-bottom: 1rem;
+  }
+
+  .table-card table thead th {
+    padding: 0.75rem 0.5rem;
+    font-size: 12px;
+  }
+
+  .table-card table tbody td {
+    padding: 0.75rem 0.5rem;
+    font-size: 13px;
+  }
 }
