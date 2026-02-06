@@ -1,0 +1,23 @@
+/* styles/variables.css */
+:root {
+  --primary-color: #4CAF50; /* Verde AgroAmigo */
+  --secondary-color: #F8F8F9; /* Fondo claro */
+  --text-color: #333;
+  --sidebar-bg: #ffffff;
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 60px;
+  --metric-bg: #ffffff;
+}
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
