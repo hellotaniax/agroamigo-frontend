@@ -1,4 +1,4 @@
-// pages/Dashboard/useDashboardData.js
+
 import { BiBulb, BiGroup, BiLeaf, BiDroplet } from 'react-icons/bi';
 
 export default function useDashboardData() {

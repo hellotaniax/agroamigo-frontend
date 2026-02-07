@@ -1,4 +1,4 @@
-import AdminLayout from '../../layouts/AdminLayout/AdminLayout';
+import AdminLayout from '../../layouts/AdminLayout';
 import MetricCard from '../../components/MetricCard';
 import TableCard from '../../components/TableCard';
 
