@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/Login/LoginPage';
+import DashboardPage from './pages/Dashboard';
 import CultivosPage from './pages/Cultivos';
 import FertilizantesPage from './pages/Fertilizantes';
-import DashboardPage from './pages/Dashboard';
-import LoginPage from './pages/Login/LoginPage';
+import MensajesPage from './pages/Mensajes';
 import './styles/index.css';
 
 
@@ -29,6 +30,11 @@ function App() {
         <Route
           path="/fertilizantes"
           element={isLoggedIn ? <FertilizantesPage /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/mensajes"
+          element={isLoggedIn ? <MensajesPage /> : <Navigate to="/login" />}
         />
 
         {/* Ruta comodín */}

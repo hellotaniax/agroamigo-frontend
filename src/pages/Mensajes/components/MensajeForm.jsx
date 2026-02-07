@@ -1,43 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { FormPanel } from '../../../components/FormPanel';
-import { fertilizanteFormConfig } from '../fertilizantes.config';
+import { mensajeFormConfig } from '../mensajes.config';
 
-// Constantes de configuración
-const TIPOS_MAP_INVERSE = {
-  'Nitrogenado': '1',
-  'Fosfatado': '2',
-  'Potásico': '3',
-  'Complejo NPK': '4',
-  'Micronutrientes': '5',
-  'Otro': '99',
-};
 
 const ESTADOS_MAP_INVERSE = {
   'Activo': '1',
-  'Archivado': '2',
-  'Borrador': '3',
+  'Borrador': '2',
+  'Archivado': '3',
 };
 
-// Generar el estado inicial vacío una sola vez
+
 const INITIAL_EMPTY_STATE = Object.fromEntries(
-  fertilizanteFormConfig.map(f => [f.key, ''])
+  mensajeFormConfig.map(f => [f.key, ''])
 );
 
-export default function FertilizanteForm({ onSubmit, onCancel, initialValues }) {
+export default function MensajeForm({ onSubmit, onCancel, initialValues }) {
   const [formValues, setFormValues] = useState(INITIAL_EMPTY_STATE);
 
   useEffect(() => {
     if (initialValues) {
       const processedValues = {
         ...initialValues,
-        idtfer: initialValues.idtfer || TIPOS_MAP_INVERSE[initialValues.tipoNombre] || '',
+        // Convertir estadoNombre a idest si es necesario
         idest: initialValues.idest || ESTADOS_MAP_INVERSE[initialValues.estadoNombre] || '',
       };
       setFormValues(processedValues);
     } else {
       setFormValues(INITIAL_EMPTY_STATE);
     }
-  }, [initialValues]); // Dependencias optimizadas
+  }, [initialValues]); 
 
   const handleChange = (key) => (value) => 
     setFormValues(prev => ({ ...prev, [key]: value }));
@@ -45,13 +36,13 @@ export default function FertilizanteForm({ onSubmit, onCancel, initialValues }) 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formValues);
-    // Opcional: solo resetear si es un formulario de creación (sin initialValues)
+
     if (!initialValues) setFormValues(INITIAL_EMPTY_STATE);
   };
 
   return (
     <FormPanel
-      formConfig={fertilizanteFormConfig}
+      formConfig={mensajeFormConfig}
       values={formValues}
       onChange={handleChange}
       onSubmit={handleSubmit}
