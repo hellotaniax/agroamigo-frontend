@@ -4,33 +4,40 @@ import Sidebar from '../../components/Sidebar';
 import AdminHeader from '../../components/AdminHeader';
 import './AdminLayout.css';
 
-export default function AdminLayout({ children }) {
+export default function AdminLayout({ children, breadcrumbs = [] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="admin-layout d-flex">
-      {/* Sidebar */}
-      <Sidebar
-        mobileOpen={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-      />
+      <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
-      {/* Área principal */}
       <div className="content-area flex-grow-1">
         <AdminHeader onMenuClick={() => setMobileOpen(true)} />
 
-        <main className="main-content">
-          {children}
-        </main>
+        {/* Breadcrumbs */}
+        {breadcrumbs.length > 0 && (
+          <nav aria-label="breadcrumb" className="px-3 py-2">
+            <ol className="breadcrumb mb-3">
+              {breadcrumbs.map((bc, idx) => (
+                <li
+                  key={idx}
+                  className={`breadcrumb-item ${idx === breadcrumbs.length - 1 ? 'active' : ''}`}
+                  {...(idx === breadcrumbs.length - 1 ? { 'aria-current': 'page' } : {})}
+                >
+                  {bc.href ? <a href={bc.href}>{bc.label}</a> : bc.label}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+
+        <main className="main-content">{children}</main>
       </div>
 
-      {/* Overlay móvil */}
       {mobileOpen && (
-        <div
-          className="sidebar-overlay"
-          onClick={() => setMobileOpen(false)}
-        />
+        <div className="sidebar-overlay" onClick={() => setMobileOpen(false)} />
       )}
     </div>
   );
 }
+

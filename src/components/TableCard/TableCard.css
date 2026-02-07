@@ -1,9 +1,18 @@
+/* =========================
+   TABLE CARD MODERNA
+   ========================= */
 .table-card {
-  background-color: #fff;
-  border-radius: 0.75rem;
+  background-color: #ffffff;
+  border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #f0f0f0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
 .table-card h6 {
@@ -16,6 +25,7 @@
 .table-responsive {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  position: relative;
 }
 
 .table-card table {
@@ -25,7 +35,7 @@
 }
 
 .table-card table thead th {
-  background-color: #f8f9fa;
+  background-color: #f1f3f5;
   border-bottom: 2px solid #dee2e6;
   color: #495057;
   font-weight: 600;
@@ -33,6 +43,12 @@
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: left;
+}
+
+/* Filas alternadas */
+.table-card table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
 }
 
 .table-card table tbody td {
@@ -40,36 +56,49 @@
   border-bottom: 1px solid #e9ecef;
   color: #495057;
   font-size: 14px;
+  word-break: break-word;
+  transition: background 0.3s ease;
 }
 
-.table-card table tbody tr.table-row-hover {
-  transition: background-color 0.2s ease;
-}
-
+/* Hover sutil */
 .table-card table tbody tr.table-row-hover:hover {
-  background-color: #f8f9fa;
+  background-color: #e9f5ff;
   cursor: pointer;
 }
 
-/* Badges según estado */
-.badge.activo {
-  background-color: #d1e7dd;
-  color: #0f5132;
-  border-radius: 0.5rem;
+/* Badges limpios */
+.badge {
+  border-radius: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: default;
 }
 
-.badge.inactivo {
-  background-color: #f8d7da;
-  color: #842029;
-  border-radius: 0.5rem;
-}
+/* Estados */
+.badge.activo { background-color: #d1e7dd; color: #0f5132; }
+.badge.archivado { background-color: #d6d8d9; color: #495057; }
+.badge.inactivo { background-color: #fff3cd; color: #856404; }
 
+/* Mensajes centrados */
 .table-card table tbody td.text-center {
   padding: 2rem;
   color: #6c757d;
   font-style: italic;
 }
 
+/* Acciones con tus botones */
+.table-row-actions button {
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+.table-row-actions button:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .table-card {
     padding: 1rem;
@@ -88,5 +117,10 @@
   .table-card table tbody td {
     padding: 0.75rem 0.5rem;
     font-size: 13px;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.45rem;
   }
 }
