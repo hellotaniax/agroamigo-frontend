@@ -1,0 +1,36 @@
+.admin-header {
+  display: flex;
+  flex-direction: column; /* importante para breadcrumbs */
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background-color: #fff;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.header-top {
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbs {
+  font-size: 0.875rem;
+  color: #6c757d;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-bottom: 4px;
+}
+
+.header-spacer {
+  flex-grow: 1;
+}
+
+.mobile-toggle {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}

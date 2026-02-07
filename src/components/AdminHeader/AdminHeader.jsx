@@ -1,0 +1,35 @@
+import './AdminHeader.css';
+import BreadcrumbItem from '../BreadcrumbItem';
+
+export default function AdminHeader({ onMenuClick, breadcrumbs = [] }) {
+  return (
+    <header className="admin-header d-flex flex-column">
+      {/* Top: botón hamburguesa y espaciador */}
+      <div className="header-top d-flex align-items-center w-100 px-3">
+        <button
+          className="mobile-toggle d-md-none me-3"
+          onClick={onMenuClick}
+          aria-label="Abrir menú"
+        >
+          ☰
+        </button>
+        <div className="header-spacer flex-grow-1" />
+        {/* Futuro: usuario / notificaciones */}
+      </div>
+
+      {/* Bottom: breadcrumbs */}
+      {breadcrumbs.length > 0 && (
+        <nav className="breadcrumbs px-3" aria-label="breadcrumb">
+          {breadcrumbs.map((item, idx) => (
+            <BreadcrumbItem
+              key={idx}
+              label={item.label}
+              link={item.link}
+              isLast={idx === breadcrumbs.length - 1}
+            />
+          ))}
+        </nav>
+      )}
+    </header>
+  );
+}
