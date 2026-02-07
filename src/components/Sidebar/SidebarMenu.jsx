@@ -8,7 +8,7 @@ export default function SidebarMenu() {
         <SidebarItem
           key={index}
           {...item}
-          divider={index === 1 || index === 3}
+          divider={index === 0 || index === 2 || index === 4}
         />
       ))}
     </ul>

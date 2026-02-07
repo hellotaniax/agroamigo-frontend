@@ -1,63 +1,145 @@
 /* =========================
-   SIDEBAR
+   CSS VARIABLES (Design System)
+   ========================= */
+:root {
+  /* Colores */
+  --color-primary: #2d5a27;
+  --color-primary-light: #e8f5e9;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #6c757d;
+  --color-border: #e6e6e6;
+  --color-divider: #d9d9d9;
+  --color-bg-hover: #f5f5f5;
+  --color-bg-light: #fff;
+
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 28px;
+
+  /* Tipografía */
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 18px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Transiciones */
+  --transition-fast: 0.12s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Border Radius */
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-pill: 50%;
+
+  /* Sombras */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* =========================
+   SIDEBAR CONTAINER
    ========================= */
 .sidebar {
   width: 240px;
-  background: #fff;
-  border-right: 1px solid #e6e6e6;
-  transition: width 0.3s ease, left 0.3s ease, box-shadow 0.3s ease;
+  background: var(--color-bg-light);
+  border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   min-height: 100vh;
-  padding: 16px;
+  padding: var(--spacing-lg);
   position: relative;
   z-index: 1000;
   overflow-y: auto;
-  overflow-x: visible; /* necesario para tooltip */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  overflow-x: hidden;
+  box-shadow: var(--shadow-md);
+  transition: width var(--transition-slow), 
+              left var(--transition-slow), 
+              box-shadow var(--transition-base);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 }
 
 .sidebar.collapsed {
   width: 70px;
-  padding: 16px 8px;
+  padding: var(--spacing-lg) var(--spacing-sm);
+}
+
+/* Scrollbar personalizada y minimalista */
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+  border-radius: var(--border-radius-pill);
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
 }
 
 /* =========================
-   HEADER / LOGO
+   LOGO / HEADER
    ========================= */
 .sidebar-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px 0;
-  margin-bottom: 28px;
+  padding: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-xl);
+  flex-shrink: 0;
 }
 
 .sidebar-logo {
   width: 80px;
   height: auto;
   object-fit: contain;
-  transition: transform 0.3s ease, filter 0.3s ease;
+  transition: transform var(--transition-slow), 
+              filter var(--transition-slow);
+  cursor: pointer;
 }
 
 .sidebar.collapsed .sidebar-logo {
   width: 40px;
-  margin: 0 auto;
 }
 
 .sidebar-logo:hover {
   transform: scale(1.08);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+  filter: drop-shadow(0 4px 12px rgba(45, 90, 39, 0.2));
+}
+
+.sidebar-logo:active {
+  transform: scale(0.96);
 }
 
 /* =========================
-   MENÚ
+   MENÚ LISTA
    ========================= */
 .sidebar-menu {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--spacing-sm);
   list-style: none;
   padding: 0;
   margin: 0;
@@ -66,132 +148,212 @@
 
 .sidebar-menu .nav-item {
   margin: 0;
-  position: relative; /* para tooltip absoluto */
-}
-
-.sidebar-menu .nav-item.divider {
-  border-top: 1px solid #e0e0e0;
-  margin: 16px 0;
-}
-
-.sidebar-menu .nav-link {
-  display: flex;
-  align-items: center;
-  padding: 12px 14px;
-  color: #6c757d;
-  text-decoration: none;
-  border-radius: 10px;
-  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
-  gap: 12px;
-  font-size: 14px;
-  font-weight: 500;
   position: relative;
 }
 
-.sidebar-menu .nav-link i {
-  font-size: 18px;
-  opacity: 0.85;
-  flex-shrink: 0;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  min-width: 20px;
+/* Dividers - Separadores entre secciones */
+.sidebar-menu .nav-item.divider::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background: var(--color-divider);
+  margin: var(--spacing-md) 0;
+  opacity: 0.6;
 }
 
+/* =========================
+   ITEMS DEL MENÚ
+   ========================= */
+.sidebar-menu .nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--transition-base),
+              color var(--transition-base),
+              transform var(--transition-fast);
+  user-select: none;
+}
+
+.sidebar-menu .nav-link i {
+  font-size: var(--font-size-lg);
+  opacity: 0.8;
+  flex-shrink: 0;
+  width: 20px;
+  transition: transform var(--transition-fast), 
+              opacity var(--transition-fast);
+}
+
+/* Estado Hover - Feedback visual sutil */
 .sidebar-menu .nav-link:hover {
-  background: #e8f5e9;
-  color: #2d5a27;
+  background-color: var(--color-bg-hover);
+  color: var(--color-primary);
 }
 
 .sidebar-menu .nav-link:hover i {
-  transform: scale(1.15);
+  opacity: 1;
+  transform: scale(1.1);
 }
 
+/* Estado Active - Ítem seleccionado */
 .sidebar-menu .nav-link.active {
-  background: #2d5a27;
-  color: #fff;
-  box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+  background-color: var(--color-primary);
+  color: var(--color-bg-light);
+  box-shadow: 0 2px 8px rgba(45, 90, 39, 0.15);
+  font-weight: var(--font-weight-semibold);
 }
 
-/* =========================
-   COLLAPSE
-   ========================= */
-.sidebar.collapsed .nav-link span {
-  display: none;
-  opacity: 0;
-}
-
-.sidebar.collapsed .nav-link {
-  justify-content: center;
-}
-
-/* =========================
-   TOOLTIP FLOTANTE (CREADO EN EL BODY)
-   ========================= */
-.custom-sidebar-tooltip {
-  position: fixed !important;
-  z-index: 2147483647 !important;
-  pointer-events: auto !important;
-  background: #2d5a27;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  white-space: nowrap;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
-  transition: opacity 0.12s ease, transform 0.12s ease;
-  opacity: 0;
-}
-.custom-sidebar-tooltip.show {
+.sidebar-menu .nav-link.active i {
   opacity: 1;
 }
 
-/* =========================
-   ACCESIBILIDAD (FOCUS)
-   ========================= */
-.sidebar-menu .nav-link:focus {
-  outline: 2px solid #a5d6a7;
+/* Estado Focus - Accesibilidad */
+.sidebar-menu .nav-link:focus-visible {
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 /* =========================
-   TOGGLE
+   ESTADO COLLAPSED
    ========================= */
-.sidebar-toggle {
-  margin-top: auto;
-  margin-bottom: 8px;
-  border-radius: 50%;
-  padding: 10px;
-  font-size: 1.1rem;
-  align-self: center;
-  min-width: 40px;
-  min-height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f8f8f9;
-  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+.sidebar.collapsed .nav-link span {
+  display: none;
 }
 
-.sidebar-toggle:hover {
-  background: #e6f0e6;
-  transform: scale(1.08);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+.sidebar.collapsed .nav-link {
+  justify-content: center;
+  padding: var(--spacing-md);
+}
+
+.sidebar.collapsed .nav-link i {
+  margin: 0;
 }
 
 /* =========================
-   RESPONSIVE MÓVIL
+   TOOLTIP FLOTANTE
+   ========================= */
+.custom-sidebar-tooltip {
+  position: fixed;
+  z-index: 2147483647;
+  pointer-events: auto;
+  background: var(--color-primary);
+  color: var(--color-bg-light);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-lg);
+  transition: opacity var(--transition-fast), 
+              transform var(--transition-fast);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.custom-sidebar-tooltip.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* =========================
+   BOTÓN TOGGLE - MEJORADO UX/UI
+   ========================= */
+.sidebar-toggle {
+  position: relative;
+  margin-top: auto;
+  margin-bottom: var(--spacing-md);
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-md);
+  background: #f5f5f5;
+  color: var(--color-text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-base),
+              color var(--transition-base),
+              border-color var(--transition-base),
+              box-shadow var(--transition-fast),
+              transform var(--transition-fast);
+}
+
+/* Icono con rotación fluida */
+.sidebar-toggle i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: transform var(--transition-slow);
+}
+
+/* Estado Hover */
+.sidebar-toggle:hover {
+  background: var(--color-primary);
+  color: var(--color-bg-light);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(45, 90, 39, 0.2);
+}
+
+.sidebar-toggle:hover i {
+  transform: scale(1.15);
+}
+
+/* Estado Active */
+.sidebar-toggle:active {
+  transform: translateY(1px);
+}
+
+/* Estado Focus - Accesibilidad */
+.sidebar-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  background: var(--color-primary);
+  color: var(--color-bg-light);
+  border-color: var(--color-primary);
+}
+
+/* =========================
+   RESPONSIVE - TABLET/DESKTOP
    ========================= */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
     left: -260px;
     top: 0;
+    height: 100vh;
     z-index: 1050;
-    transition: left 0.3s ease;
-    box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    transition: left var(--transition-slow);
+    border-right: 1px solid var(--color-border);
+    box-shadow: 2px 0 var(--shadow-lg);
   }
 
   .sidebar.show {
     left: 0;
+  }
+}
+
+/* =========================
+   RESPONSIVE - MOBILE
+   ========================= */
+@media (max-width: 480px) {
+  .sidebar {
+    panel: var(--spacing-md);
+  }
+
+  .sidebar-menu .nav-link {
+    padding: var(--spacing-md) var(--spacing-lg);
   }
 }
