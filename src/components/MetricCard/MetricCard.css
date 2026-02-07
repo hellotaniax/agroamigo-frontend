@@ -8,34 +8,35 @@
   gap: 1rem;
   transition: all 0.3s ease;
   border: 1px solid #f0f0f0;
+  overflow: hidden; /* seguridad */
 }
 
-.metric-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
-
-.metric-card .metric-icon {
+.metric-icon {
   font-size: 2.5rem;
   color: #4CAF50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-width: 60px;
+  display: flex;
+  justify-content: center;
 }
 
-.metric-card h6 {
-  color: #6c757d;
+.metric-content {
+  min-width: 0;              /* 🔑 CLAVE */
+  flex: 1;
+}
+
+.metric-content h6 {
   font-size: 13px;
   font-weight: 500;
+  color: #6c757d;
   margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* título largo → elegante */
 }
 
-.metric-card h3 {
-  color: #212529;
+.metric-content h3 {
   font-size: 28px;
   font-weight: 700;
-  margin: 0.25rem 0 0 0;
+  margin: 0.25rem 0 0;
+  word-break: break-word;    /* números grandes */
 }
