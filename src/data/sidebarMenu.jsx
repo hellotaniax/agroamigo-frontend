@@ -1,9 +1,9 @@
 
 export const sidebarMenu = [
-  { icon: 'bi-grid', label: 'Panel', active: true },
-  { icon: 'bi-leaf', label: 'Cultivos' },
-  { icon: 'bi-droplet', label: 'Fertilizantes' },
-  { icon: 'bi-chat', label: 'Mensajes' },
-  { icon: 'bi-lightbulb', label: 'Recomendaciones' },
-  { icon: 'bi-people', label: 'Usuarios' },
+  { icon: 'bi-grid', label: 'Panel', to: '/dashboard', active: true },
+  { icon: 'bi-leaf', label: 'Cultivos', to: '/cultivos' },
+  { icon: 'bi-droplet', label: 'Fertilizantes', to: '/fertilizantes' },
+  { icon: 'bi-chat', label: 'Mensajes', to: '/mensajes' },
+  { icon: 'bi-lightbulb', label: 'Recomendaciones', to: '/recomendaciones' },
+  { icon: 'bi-people', label: 'Usuarios', to: '/usuarios' },
 ];
