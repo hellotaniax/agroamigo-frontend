@@ -6,11 +6,18 @@ import { useState } from 'react';
 
 export default function CultivosPage() {
   const { cultivos, loading } = useCultivosData();
-  const [filter, setFilter] = useState('');
+  const [filters, setFilters] = useState({
+    search: '',
+    state: '',
+    date: ''
+  });
 
-  const filteredCultivos = cultivos.filter(c =>
-    c.nombrecul.toLowerCase().includes(filter.toLowerCase())
-  );
+  const filteredCultivos = cultivos.filter(c => {
+    const rowDate = new Date(c.creacioncul).toISOString().slice(0,10);
+    return c.nombrecul.toLowerCase().includes(filters.search.toLowerCase()) &&
+           (filters.state === '' || c.estadoNombre === filters.state) &&
+           (filters.date === '' || rowDate === filters.date);
+  });
 
   return (
     <AdminLayout breadcrumbs={[{ label: 'Cultivos' }]}>
@@ -18,7 +25,7 @@ export default function CultivosPage() {
         <h4 className="fw-semibold">Lista de Cultivos</h4>
       </div>
 
-      <CultivosFilter onFilter={setFilter} />
+      <CultivosFilter onFiltersChange={setFilters} />
       <CultivosTable data={filteredCultivos} loading={loading} />
     </AdminLayout>
   );
