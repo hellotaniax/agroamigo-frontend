@@ -4,22 +4,19 @@
   background: #F8F8F9;
 }
 
-/* Sidebar fijo, contenido scrolleable */
+/* Columna derecha (header + contenido) */
+.content-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Contenido principal scrolleable */
 .main-content {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  height: 100vh;
-}
-
-
-/* Botón hamburguesa */
-.mobile-toggle {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  margin-bottom: 16px;
-  cursor: pointer;
 }
 
 /* Overlay móvil */

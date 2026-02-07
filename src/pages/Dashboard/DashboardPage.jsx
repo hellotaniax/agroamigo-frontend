@@ -12,7 +12,7 @@ export default function DashboardPage() {
   return (
     <AdminLayout>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="fw-semibold">Panel General</h4>
+        <h3 className="fw-semibold">Panel General</h3>
       </div>
 
       <div className="row g-4 mb-4">

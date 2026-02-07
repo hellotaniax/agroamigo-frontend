@@ -1,5 +1,7 @@
+
 import { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
+import AdminHeader from './AdminHeader';
 import './AdminLayout.css';
 
 export default function AdminLayout({ children }) {
@@ -7,24 +9,22 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="admin-layout d-flex">
+      {/* Sidebar */}
       <Sidebar
         mobileOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
       />
 
-      <main className="main-content">
-        {/* Botón hamburguesa SOLO móvil */}
-        <button
-          className="mobile-toggle d-md-none"
-          onClick={() => setMobileOpen(true)}
-        >
-          ☰
-        </button>
+      {/* Área principal */}
+      <div className="content-area flex-grow-1">
+        <AdminHeader onMenuClick={() => setMobileOpen(true)} />
 
-        {children}
-      </main>
+        <main className="main-content">
+          {children}
+        </main>
+      </div>
 
-      {/* Overlay */}
+      {/* Overlay móvil */}
       {mobileOpen && (
         <div
           className="sidebar-overlay"
