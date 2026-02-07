@@ -1,4 +1,29 @@
 .admin-layout {
   min-height: 100vh;
   background: #F8F8F9;
+  display: flex;
+}
+
+/* Contenido principal */
+.main-content {
+  flex: 1;
+  padding: 24px;
+  position: relative;
+}
+
+/* Botón hamburguesa */
+.mobile-toggle {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+/* Overlay móvil */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1040;
 }

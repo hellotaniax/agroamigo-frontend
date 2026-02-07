@@ -6,15 +6,30 @@ import SidebarMenu from './SidebarMenu';
 import SidebarToggle from './SidebarToggle';
 import useSidebarTooltip from '../../hooks/useSidebarTooltip';
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen, onClose }) {
   const [collapsed, setCollapsed] = useState(false);
 
   useSidebarTooltip(collapsed);
 
   return (
-    <aside id="sidebar" className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside
+      id="sidebar"
+      className={`sidebar 
+        ${collapsed ? 'collapsed' : ''} 
+        ${mobileOpen ? 'show' : ''}`}
+    >
+      {/* Botón cerrar (solo móvil) */}
+      <button
+        className="sidebar-close d-md-none"
+        onClick={onClose}
+        aria-label="Cerrar menú"
+      >
+        ✕
+      </button>
+
       <SidebarHeader />
-      <SidebarMenu />
+      <SidebarMenu onItemClick={onClose} />
+
       <SidebarToggle
         collapsed={collapsed}
         onToggle={() => setCollapsed(!collapsed)}
@@ -22,3 +37,4 @@ export default function Sidebar() {
     </aside>
   );
 }
+

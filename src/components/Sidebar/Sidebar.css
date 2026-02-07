@@ -357,3 +357,34 @@
     padding: var(--spacing-md) var(--spacing-lg);
   }
 }
+/* =========================
+   BOTÓN CERRAR - MOBILE
+   ========================= */
+.sidebar-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.sidebar-close:hover {
+  color: var(--color-primary);
+}
+
+/* Ocultar en desktop */
+@media (min-width: 769px) {
+  .sidebar-close {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle {
+    display: none;
+  }
+}
