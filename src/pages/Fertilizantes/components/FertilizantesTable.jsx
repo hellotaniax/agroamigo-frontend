@@ -35,9 +35,32 @@ export default function FertilizantesTable({ data, loading, showActions = true }
 
   const handleFormClose = () => setEditingFertilizante(null);
 
+  // Mapeos para convertir IDs a nombres
+  const tiposMap = {
+    '1': 'Nitrogenado',
+    '2': 'Fosfatado',
+    '3': 'Potásico',
+    '4': 'Complejo NPK',
+    '5': 'Micronutrientes',
+    '99': 'Otro',
+  };
+
+  const estadosMap = {
+    '1': 'Activo',
+    '2': 'Archivado',
+    '3': 'Borrador',
+  };
+
   const handleFormSubmit = (updatedFertilizante) => {
+    // Convertir IDs a nombres antes de guardar
+    const fertilizanteConNombres = {
+      ...updatedFertilizante,
+      tipoNombre: tiposMap[String(updatedFertilizante.idtfer)] || updatedFertilizante.tipoNombre,
+      estadoNombre: estadosMap[String(updatedFertilizante.idest)] || updatedFertilizante.estadoNombre,
+    };
+    
     setTableData(prev =>
-      prev.map(f => (f.idfer === updatedFertilizante.idfer ? updatedFertilizante : f))
+      prev.map(f => (f.idfer === fertilizanteConNombres.idfer ? fertilizanteConNombres : f))
     );
     setEditingFertilizante(null);
   };

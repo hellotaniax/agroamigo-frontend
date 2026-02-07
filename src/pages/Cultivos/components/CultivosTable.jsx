@@ -42,12 +42,33 @@ export default function CultivosTable({ data, loading, showActions = true }) {
 
   const handleFormClose = () => setEditingCultivo(null);
 
+  // Mapeos para convertir IDs a nombres
+  const tiposMap = {
+    '1': 'Hortaliza',
+    '2': 'Fruta',
+    '3': 'Grano',
+    '99': 'Otro',
+  };
+
+  const estadosMap = {
+    '1': 'Activo',
+    '2': 'Archivado',
+    '3': 'Borrador',
+  };
+
   const handleFormSubmit = (updatedCultivo) => {
     console.log('Cultivo actualizado:', updatedCultivo);
 
+    // Convertir IDs a nombres antes de guardar
+    const cultivoConNombres = {
+      ...updatedCultivo,
+      tipoNombre: tiposMap[String(updatedCultivo.idtcul)] || updatedCultivo.tipoNombre,
+      estadoNombre: estadosMap[String(updatedCultivo.idest)] || updatedCultivo.estadoNombre,
+    };
+
     // Actualiza tabla localmente
     setTableData(prev =>
-      prev.map(c => (c.idcul === updatedCultivo.idcul ? updatedCultivo : c))
+      prev.map(c => (c.idcul === cultivoConNombres.idcul ? cultivoConNombres : c))
     );
 
     setEditingCultivo(null);
