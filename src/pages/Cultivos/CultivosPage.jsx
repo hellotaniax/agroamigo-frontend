@@ -3,7 +3,7 @@ import AdminLayout from '../../layouts/AdminLayout';
 import useCultivosData from './useCultivosData';
 import CultivosTable from './components/CultivosTable';
 import CultivosFilter from './components/CultivosFilter';
-import CultivoForm from './components/CultivosForm';
+import CultivoForm from './components/CultivoForm';
 import { AddButton } from '../../components/Buttons';
 import { useState } from 'react';
 
