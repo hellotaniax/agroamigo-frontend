@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import TableCard from '../../../components/TableCard';
-import { fertilizantesColumns, tipoFertilizanteBadgeClass, estadoBadgeClass } from '../fertilizantes.config';
+import { fertilizantesColumns, estadoBadgeClass } from '../fertilizantes.config';
 import { ButtonPrimary} from '../../../components/Buttons';
 import { BiEdit } from 'react-icons/bi';
 import FertilizanteForm from './FertilizanteForm';
@@ -12,12 +12,6 @@ export default function FertilizantesTable({ data, loading, showActions = true }
 
   useEffect(() => setTableData(data), [data]);
 
-  const renderTipo = (row) => (
-    <span className={`badge ${tipoFertilizanteBadgeClass[row.tipoNombre] || 'badge-light'}`}>
-      {row.tipoNombre}
-    </span>
-  );
-
   const renderEstado = (row) => (
     <span className={`badge ${estadoBadgeClass[row.estadoNombre] || ''}`}>
       {row.estadoNombre}
@@ -25,7 +19,6 @@ export default function FertilizantesTable({ data, loading, showActions = true }
   );
 
   const columns = fertilizantesColumns.map(col => {
-    if (col.accessor === 'tipoNombre') return { ...col, render: renderTipo };
     if (col.accessor === 'estadoNombre') return { ...col, render: renderEstado };
     return col;
   });
