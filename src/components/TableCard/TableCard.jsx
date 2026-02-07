@@ -33,9 +33,9 @@ export default function TableCard({ title, columns, data, loading, rowActions })
               </tr>
             ) : (
               data.map(row => (
-                <tr key={row.id} className="table-row-hover">
+                <tr key={row.id || row.idcul} className="table-row-hover">
                   {columns.map(col => (
-                    <td key={col.accessor}>
+                    <td key={col.accessor} data-label={col.header}>
                       {col.render ? col.render(row) : row[col.accessor]}
                     </td>
                   ))}

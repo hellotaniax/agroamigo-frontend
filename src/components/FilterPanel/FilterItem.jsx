@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function FilterItem({ filter, value, onChange }) {
   const handleChange = e => onChange(e.target.value);
 

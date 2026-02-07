@@ -23,7 +23,7 @@ export default function useCultivosData(options = {}) {
       try {
         const data = [
           { idcul: 'CUL-01', nombrecul: 'Tomate', tipoNombre: 'Hortaliza', idest: 1, estadoNombre: 'Activo', creacioncul: '2026-02-05T12:00:00' },
-          { idcul: 'CUL-02', nombrecul: 'Lechuga', tipoNombre: 'Hortaliza', idest: 2, estadoNombre: 'Inactivo', creacioncul: '2026-02-01T12:00:00' },
+          { idcul: 'CUL-02', nombrecul: 'Lechuga', tipoNombre: 'Hortaliza', idest: 2, estadoNombre: 'Archivado', creacioncul: '2026-02-01T12:00:00' },
         ];
         if (mounted) {
           setCultivos(filterData(data));
@@ -41,5 +41,36 @@ export default function useCultivosData(options = {}) {
     return () => { mounted = false; };
   }, [filterData]);
 
-  return { cultivos, loading, error };
+  // Mappings para tipos y estados (simulados)
+  const tiposMap = {
+    '1': 'Hortaliza',
+    '2': 'Fruta',
+    '3': 'Grano',
+    '99': 'Otro',
+  };
+
+  const estadosMap = {
+    '1': 'Activo',  
+    '3': 'Borrador',
+    '2': 'Archivado',
+  };
+
+  // Función para agregar un cultivo (simula insertar en backend)
+  const addCultivo = (data) => {
+    const nextIdNumber = cultivos.length + 1;
+    const newId = `CUL-${String(nextIdNumber).padStart(2, '0')}`;
+    const newCultivo = {
+      idcul: newId,
+      nombrecul: data.nombrecul || '',
+      idtcul: data.idtcul || '',
+      tipoNombre: tiposMap[String(data.idtcul)] || data.tipoNombre || '',
+      idest: data.idest || '',
+      estadoNombre: estadosMap[String(data.idest)] || data.estadoNombre || '',
+      creacioncul: new Date().toISOString(),
+    };
+
+    setCultivos(prev => [newCultivo, ...prev]);
+  };
+
+  return { cultivos, loading, error, addCultivo };
 }

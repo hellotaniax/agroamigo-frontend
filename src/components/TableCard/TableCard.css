@@ -77,8 +77,8 @@
 
 /* Estados */
 .badge.activo { background-color: #d1e7dd; color: #0f5132; }
-.badge.archivado { background-color: #d6d8d9; color: #495057; }
-.badge.inactivo { background-color: #fff3cd; color: #856404; }
+.badge.borrador { background-color: #d6d8d9; color: #495057; }
+.badge.archivado { background-color: #fff3cd; color: #856404; }
 
 /* Mensajes centrados */
 .table-card table tbody td.text-center {
@@ -122,5 +122,53 @@
   .badge {
     font-size: 0.7rem;
     padding: 0.25rem 0.45rem;
+  }
+}
+
+/* Stacked rows for small devices */
+@media (max-width: 600px) {
+  .table-responsive table thead {
+    display: none;
+  }
+
+  .table-responsive table,
+  .table-responsive tbody,
+  .table-responsive tr,
+  .table-responsive td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-responsive tr {
+    margin-bottom: 0.75rem;
+    border: 1px solid #eef2f5;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background: #ffffff;
+  }
+
+  .table-responsive td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: none;
+  }
+
+  .table-responsive td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6c757d;
+    margin-right: 0.75rem;
+    width: 45%;
+    text-align: left;
+    flex: 0 0 45%;
+  }
+
+  .table-row-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
   }
 }

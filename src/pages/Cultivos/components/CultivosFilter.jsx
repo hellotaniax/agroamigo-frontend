@@ -7,7 +7,7 @@ export default function CultivosFilter({ onFiltersChange }) {
   return (
     <FilterPanel
       filtersConfig={cultivosFiltersConfig} // array directamente
-      onFiltersChange={onFiltersChange}     // callback centralizado
+      onFiltersChange={onFiltersChange}     
     />
   );
 }

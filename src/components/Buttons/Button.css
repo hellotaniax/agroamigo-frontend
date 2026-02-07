@@ -51,3 +51,16 @@
 .btn-warning:hover {
   background-color: #e0a800;
 }
+
+/* Mobile-friendly larger buttons */
+@media (max-width: 600px) {
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.6rem;
+  }
+
+  .table-row-actions .btn {
+    padding: 0.5rem 0.75rem;
+  }
+}
