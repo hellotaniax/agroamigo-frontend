@@ -350,7 +350,7 @@
    ========================= */
 @media (max-width: 480px) {
   .sidebar {
-    panel: var(--spacing-md);
+    padding: var(--spacing-md);
   }
 
   .sidebar-menu .nav-link {

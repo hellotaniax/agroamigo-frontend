@@ -1,15 +1,17 @@
 .admin-layout {
   min-height: 100vh;
-  background: #F8F8F9;
   display: flex;
+  background: #F8F8F9;
 }
 
-/* Contenido principal */
+/* Sidebar fijo, contenido scrolleable */
 .main-content {
   flex: 1;
   padding: 24px;
-  position: relative;
+  overflow-y: auto;
+  height: 100vh;
 }
+
 
 /* Botón hamburguesa */
 .mobile-toggle {
