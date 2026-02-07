@@ -24,10 +24,6 @@
   margin-bottom: 0;
 }
 
-.table-card table thead {
-  background-color: #f8f9fa;
-}
-
 .table-card table thead th {
   background-color: #f8f9fa;
   border-bottom: 2px solid #dee2e6;
@@ -46,18 +42,32 @@
   font-size: 14px;
 }
 
-.table-card table tbody tr {
+.table-card table tbody tr.table-row-hover {
   transition: background-color 0.2s ease;
 }
 
-.table-card table tbody tr:hover {
+.table-card table tbody tr.table-row-hover:hover {
   background-color: #f8f9fa;
+  cursor: pointer;
 }
 
-.table-card .badge {
-  padding: 0.5rem 0.75rem;
-  font-size: 12px;
-  font-weight: 500;
+/* Badges según estado */
+.badge.activo {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border-radius: 0.5rem;
+}
+
+.badge.inactivo {
+  background-color: #f8d7da;
+  color: #842029;
+  border-radius: 0.5rem;
+}
+
+.table-card table tbody td.text-center {
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
 }
 
 @media (max-width: 768px) {
