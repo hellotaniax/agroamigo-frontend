@@ -4,6 +4,8 @@ import DashboardPage from './pages/Dashboard';
 import CultivosPage from './pages/Cultivos';
 import FertilizantesPage from './pages/Fertilizantes';
 import MensajesPage from './pages/Mensajes';
+import RecomendacionesPage from './pages/Recomendaciones';
+import UsuariosPage from './pages/Usuarios';
 import './styles/index.css';
 
 
@@ -35,6 +37,16 @@ function App() {
         <Route
           path="/mensajes"
           element={isLoggedIn ? <MensajesPage /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/recomendaciones"
+          element={isLoggedIn ? <RecomendacionesPage /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/usuarios"
+          element={isLoggedIn ? <UsuariosPage /> : <Navigate to="/login" />}
         />
 
         {/* Ruta comodín */}
