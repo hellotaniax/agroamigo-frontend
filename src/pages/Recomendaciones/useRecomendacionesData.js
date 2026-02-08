@@ -13,7 +13,7 @@ export default function useRecomendacionesData(options = {}) {
       (!search || r.titulorec.toLowerCase().includes(search.toLowerCase()) ||
        r.descripcionrec.toLowerCase().includes(search.toLowerCase()))
     ),
-    [estado, search]
+    [estado, search, priority]
   );
 
   useEffect(() => {
