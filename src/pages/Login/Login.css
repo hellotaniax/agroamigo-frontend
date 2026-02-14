@@ -524,11 +524,13 @@
   .login-wrapper,
   .login-logo,
   .form-control:focus,
-  .login-btn,
-  @keyframes slideUp,
-  @keyframes fadeInDown,
-  @keyframes fadeInUp {
+  .login-btn {
     animation: none !important;
     transition: none !important;
+  }
+
+  /* detener animación de fondo decorativo */
+  .login-page::before {
+    animation: none !important;
   }
 }
