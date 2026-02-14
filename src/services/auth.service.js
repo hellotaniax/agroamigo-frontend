@@ -1,4 +1,5 @@
 import { apiAuth } from './api.config';
+import { clearSession } from '../utils/sessionManager';
 
 // Claves centralizadas
 const TOKEN_KEY = 'authToken';
@@ -9,13 +10,17 @@ export const authService = {
    * Iniciar sesión
    * @param {string} email
    * @param {string} password
-   * @returns {Promise<Object>}
+   * @returns {Promise<Object>} datos del usuario y token
    */
   login: async (email, password) => {
     try {
       const response = await apiAuth.post('/login', { email, password });
 
-      // Manejo flexible de respuesta del backend
+      /**
+       * El backend puede responder con:
+       * { token, usuario }
+       * { token, user }
+       */
       const { token, usuario, user } = response.data;
       const userData = usuario || user || null;
 
@@ -23,7 +28,7 @@ export const authService = {
         throw new Error('Token no recibido desde el servidor');
       }
 
-      // Guardar en localStorage
+      // Guardar sesión
       localStorage.setItem(TOKEN_KEY, token);
 
       if (userData) {
@@ -32,18 +37,20 @@ export const authService = {
 
       return response.data;
     } catch (error) {
-      console.error('Error en login:', error.response?.data || error.message);
+      console.error(
+        'Error en login:',
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
 
   /**
    * Cerrar sesión
+   * ⚠️ No redirige — la UI decide qué hacer
    */
   logout: () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    window.location.href = '/login';
+    clearSession();
   },
 
   /**

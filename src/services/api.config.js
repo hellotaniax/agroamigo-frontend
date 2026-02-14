@@ -1,13 +1,17 @@
 import axios from 'axios';
+import { clearSession } from '../utils/sessionManager';
 
 // ===============================
 // Configuración base
 // ===============================
-const API_APP_URL = import.meta.env.VITE_API_APP_URL || 'http://localhost:3276/api/app';
-const API_AUTH_URL = import.meta.env.VITE_API_AUTH_URL || 'http://localhost:3276/api/app/auth';
+const API_APP_URL =
+  import.meta.env.VITE_API_APP_URL || 'http://localhost:3276/api/app';
+
+const API_AUTH_URL =
+  import.meta.env.VITE_API_AUTH_URL || 'http://localhost:3276/api/app/auth';
 
 // ===============================
-// Instancia base para endpoints protegidos
+// Instancia para endpoints protegidos
 // ===============================
 export const apiApp = axios.create({
   baseURL: API_APP_URL,
@@ -48,16 +52,33 @@ apiApp.interceptors.request.use(
 apiApp.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+
+    if (status === 401) {
       console.warn('Sesión expirada o no autorizada');
-
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-
-      // Redirigir al login
-      window.location.href = '/login';
+      clearSession(); // elimina token y usuario
+      window.location.replace('/login'); // redirección segura
     }
 
+    if (status === 403) {
+      console.warn('Acceso denegado');
+    }
+
+    if (status >= 500) {
+      console.error('Error del servidor');
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+// ===============================
+// Interceptor opcional para auth
+// ===============================
+apiAuth.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('Error en autenticación:', error.response?.data || error.message);
     return Promise.reject(error);
   }
 );

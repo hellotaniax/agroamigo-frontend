@@ -6,53 +6,43 @@ import FertilizantesPage from './pages/Fertilizantes';
 import MensajesPage from './pages/Mensajes';
 import RecomendacionesPage from './pages/Recomendaciones';
 import UsuariosPage from './pages/Usuarios';
+import ProtectedRoute from './routes/ProtectedRoute';
+import authService from './services/auth.service';
 import './styles/index.css';
 
-
-
 function App() {
-  const isLoggedIn = true; 
-
-
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
 
+        {/* ===================== */}
+        {/* LOGIN CON REDIRECCIÓN SI YA ESTÁ AUTENTICADO */}
+        {/* ===================== */}
         <Route
-          path="/dashboard"
-          element={isLoggedIn ? <DashboardPage /> : <Navigate to="/login" />}
+          path="/login"
+          element={
+            authService.isAuthenticated()
+              ? <Navigate to="/dashboard" replace />
+              : <LoginPage />
+          }
         />
 
-        <Route
-          path="/cultivos"
-          element={isLoggedIn ? <CultivosPage /> : <Navigate to="/login" />}
-        />
+        {/* ===================== */}
+        {/* RUTAS PROTEGIDAS */}
+        {/* ===================== */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/cultivos" element={<CultivosPage />} />
+          <Route path="/fertilizantes" element={<FertilizantesPage />} />
+          <Route path="/mensajes" element={<MensajesPage />} />
+          <Route path="/recomendaciones" element={<RecomendacionesPage />} />
+          <Route path="/usuarios" element={<UsuariosPage />} />
+        </Route>
 
-        <Route
-          path="/fertilizantes"
-          element={isLoggedIn ? <FertilizantesPage /> : <Navigate to="/login" />}
-        />
+        {/* Redirección global */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
 
-        <Route
-          path="/mensajes"
-          element={isLoggedIn ? <MensajesPage /> : <Navigate to="/login" />}
-        />
-
-        <Route
-          path="/recomendaciones"
-          element={isLoggedIn ? <RecomendacionesPage /> : <Navigate to="/login" />}
-        />
-
-        <Route
-          path="/usuarios"
-          element={isLoggedIn ? <UsuariosPage /> : <Navigate to="/login" />}
-        />
-
-        {/* Ruta comodín */}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
-
     </Router>
   );
 }
