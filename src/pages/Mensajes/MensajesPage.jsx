@@ -1,4 +1,4 @@
-// src/pages/Mensajes/MensajesPage.jsx
+
 import AdminLayout from '../../layouts/AdminLayout';
 import useMensajesData from './useMensajesData';
 import MensajesTable from './components/MensajesTable';

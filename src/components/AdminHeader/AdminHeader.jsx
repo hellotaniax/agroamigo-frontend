@@ -14,6 +14,13 @@ export default function AdminHeader({ onMenuClick, breadcrumbs = [] }) {
           ☰
         </button>
         <div className="header-spacer flex-grow-1" />
+        <div className="header-user d-flex align-items-center">
+        <button className='logout-btn' onClick={() => {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        }}>Cerrar sesión</button>
+        </div>
+        
         {/* Futuro: usuario / notificaciones */}
       </div>
 

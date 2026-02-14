@@ -1,4 +1,3 @@
-
 export const dashboardMetricsConfig = [
   { key: 'cultivos', title: 'Cultivos activos' },
   { key: 'fertilizantes', title: 'Fertilizantes' },
@@ -7,8 +6,20 @@ export const dashboardMetricsConfig = [
 ];
 
 export const dashboardTableColumns = [
-  'Cultivo',
-  'Tipo',
-  'Fecha',
-  'Estado',
+  {
+    accessor: 'cultivo',
+    header: 'Cultivo',
+  },
+  {
+    accessor: 'tipo',
+    header: 'Tipo',
+  },
+  {
+    accessor: 'fecha',
+    header: 'Fecha',
+  },
+  {
+    accessor: 'estado',
+    header: 'Estado',
+  },
 ];

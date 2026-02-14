@@ -1,0 +1,72 @@
+/* FilterPanel.css */
+
+/* Contenedor principal del panel */
+.filter-panel {
+  margin-bottom: 1.5rem; 
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: #f8f9fa;
+}
+
+/* Contenedor de grupo de filtros */
+.filter-group {
+  display: flex;
+  gap: 1rem; 
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+/* Contenedor de cada filtro individual */
+.filter-item {
+  min-width: 16rem;        
+  max-width: 100%;        
+  flex: 1 1 auto;          
+}
+
+
+/* Label */
+.filter-item label {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: default;
+}
+
+/* Input y select */
+.filter-item input,
+.filter-item select {
+  width: 100%;
+  padding: 0.5rem 0.75rem; 
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.375rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-item input:focus,
+.filter-item select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+  outline: none;
+}
+
+/* Input con icono */
+.filter-item .input-group {
+  display: flex;
+  align-items: stretch; 
+}
+
+.filter-item .input-group-text {
+  padding: 0 0.75rem;         
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem 0 0 0.375rem;
+}
+
+.filter-item .input-group input {
+  border-radius: 0 0.375rem 0.375rem 0;
+  border-left: none;
+  flex: 1;
+  padding: 0.5rem 0.75rem;  
+}

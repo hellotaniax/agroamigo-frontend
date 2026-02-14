@@ -1,6 +1,7 @@
 
 import { useEffect } from 'react';
 
+// Crear un tooltip personalizado para los enlaces del sidebar cuando está colapsado
 export default function useSidebarTooltip(collapsed) {
   useEffect(() => {
     if (!collapsed) return;

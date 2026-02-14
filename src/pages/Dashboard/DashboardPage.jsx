@@ -9,6 +9,27 @@ import { dashboardTableColumns } from './dashboard.config';
 export default function DashboardPage() {
   const { metrics, lastCultivos } = useDashboardData();
 
+  // Configurar columnas con render personalizado para estado y fecha
+  const tableColumns = dashboardTableColumns.map(col => {
+    if (col.accessor === 'estado') {
+      return {
+        ...col,
+        render: (row) => (
+          <span className={`badge ${row.statusClass}`}>
+            {row.estado}
+          </span>
+        ),
+      };
+    }
+    if (col.accessor === 'fecha') {
+      return {
+        ...col,
+        render: (row) => new Date(row.fecha).toLocaleDateString('es-ES'),
+      };
+    }
+    return col;
+  });
+
   return (
     <AdminLayout>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -25,7 +46,7 @@ export default function DashboardPage() {
 
       <TableCard
         title="Últimos cultivos registrados"
-        columns={dashboardTableColumns}
+        columns={tableColumns}
         data={lastCultivos}
       />
     </AdminLayout>

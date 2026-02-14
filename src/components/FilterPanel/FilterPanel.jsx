@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FilterGroup from './FilterGroup';
 import { ToggleButton } from '../Buttons';
+import './FilterPanel.css';
 
 export default function FilterPanel({ filtersConfig = [], onFiltersChange }) {
   const [values, setValues] = useState(
@@ -21,7 +22,7 @@ export default function FilterPanel({ filtersConfig = [], onFiltersChange }) {
   };
 
   return (
-    <div className="mb-3">
+    <div className="filter-panel">
       <ToggleButton collapsed={collapsed} onClick={() => setCollapsed(!collapsed)} />
       {!collapsed && (
         <FilterGroup

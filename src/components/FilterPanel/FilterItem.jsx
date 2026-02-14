@@ -1,12 +1,15 @@
+import React from 'react';
+import './FilterPanel.css'; // importa tu CSS
+
 export default function FilterItem({ filter, value, onChange }) {
   const handleChange = e => onChange(e.target.value);
 
   switch (filter.type) {
     case 'text':
       return (
-        <div className="d-flex flex-column">
-          {filter.label && <label htmlFor={filter.key} className="form-label">{filter.label}</label>}
-          <div className="input-group" style={{ minWidth: '400px' }}>
+        <div className="filter-item">
+          {filter.label && <label htmlFor={filter.key}>{filter.label}</label>}
+          <div className="input-group">
             {filter.icon && <span className="input-group-text">{filter.icon}</span>}
             <input
               id={filter.key}
@@ -21,8 +24,8 @@ export default function FilterItem({ filter, value, onChange }) {
       );
     case 'select':
       return (
-        <div className="d-flex flex-column">
-          {filter.label && <label htmlFor={filter.key} className="form-label">{filter.label}</label>}
+        <div className="filter-item">
+          {filter.label && <label htmlFor={filter.key}>{filter.label}</label>}
           <select
             id={filter.key}
             className="form-select"
@@ -37,8 +40,8 @@ export default function FilterItem({ filter, value, onChange }) {
       );
     case 'date':
       return (
-        <div className="d-flex flex-column">
-          {filter.label && <label htmlFor={filter.key} className="form-label">{filter.label}</label>}
+        <div className="filter-item">
+          {filter.label && <label htmlFor={filter.key}>{filter.label}</label>}
           <input
             id={filter.key}
             type="date"
