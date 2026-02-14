@@ -1,26 +1,23 @@
 import { apiAuth } from './api.config';
 import { clearSession, saveSession, getToken, getUser } from '../utils/sessionManager';
 
-// Claves centralizadas
-const TOKEN_KEY = 'authToken';
-const USER_KEY = 'user';
-
+/**
+ * Servicio de Autenticación
+ * Maneja las peticiones al backend y la gestión de la sesión local.
+ */
 export const authService = {
   /**
    * Iniciar sesión
    * @param {string} email
    * @param {string} password
-   * @returns {Promise<Object>} datos del usuario y token
+   * @param {boolean} remember - Si es true, la sesión persiste al cerrar el navegador
+   * @returns {Promise<Object>} Datos de respuesta del servidor
    */
   login: async (email, password, remember = true) => {
     try {
       const response = await apiAuth.post('/login', { email, password });
 
-      /**
-       * El backend puede responder con:
-       * { token, usuario }
-       * { token, user }
-       */
+      // Extraemos token y datos de usuario (soportando ambas variantes de nombre: usuario/user)
       const { token, usuario, user } = response.data;
       const userData = usuario || user || null;
 
@@ -28,7 +25,7 @@ export const authService = {
         throw new Error('Token no recibido desde el servidor');
       }
 
-      // Guardar sesión (almacenamiento persistente o de sesión según remember)
+      // Guardar sesión usando el utility (maneja localStorage o sessionStorage internamente)
       saveSession({ token, user: userData }, remember);
 
       return response.data;
@@ -43,14 +40,14 @@ export const authService = {
 
   /**
    * Cerrar sesión
-   * ⚠️ No redirige — la UI decide qué hacer
+   * Limpia los datos de almacenamiento local.
    */
   logout: () => {
     clearSession();
   },
 
   /**
-   * Obtener usuario actual
+   * Obtener los datos del usuario actual desde la sesión
    * @returns {Object|null}
    */
   getCurrentUser: () => {
@@ -58,7 +55,7 @@ export const authService = {
   },
 
   /**
-   * Verificar autenticación
+   * Verificar si existe un token activo
    * @returns {boolean}
    */
   isAuthenticated: () => {
@@ -66,7 +63,7 @@ export const authService = {
   },
 
   /**
-   * Obtener token JWT
+   * Obtener el token JWT actual
    * @returns {string|null}
    */
   getToken: () => {
