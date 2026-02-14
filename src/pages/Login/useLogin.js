@@ -62,11 +62,9 @@ export default function useLogin(initialValues = { email: '', password: '', reme
     try {
       await authService.login(formData.email, formData.password, formData.remember);
 
-      if (!formData.remember) {
-        window.addEventListener('beforeunload', () => {
-          authService.logout();
-        });
-      }
+      // Si no marca 'remember' guardamos en sessionStorage (vía authService)
+      // NO agregamos un listener a beforeunload porque dispara también en reload,
+      // lo que provocaba que recargar la página cerrara la sesión.
 
       navigate('/dashboard');
     } catch (err) {
