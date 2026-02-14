@@ -1,5 +1,5 @@
 import { apiAuth } from './api.config';
-import { clearSession } from '../utils/sessionManager';
+import { clearSession, saveSession, getToken, getUser } from '../utils/sessionManager';
 
 // Claves centralizadas
 const TOKEN_KEY = 'authToken';
@@ -12,7 +12,7 @@ export const authService = {
    * @param {string} password
    * @returns {Promise<Object>} datos del usuario y token
    */
-  login: async (email, password) => {
+  login: async (email, password, remember = true) => {
     try {
       const response = await apiAuth.post('/login', { email, password });
 
@@ -28,12 +28,8 @@ export const authService = {
         throw new Error('Token no recibido desde el servidor');
       }
 
-      // Guardar sesión
-      localStorage.setItem(TOKEN_KEY, token);
-
-      if (userData) {
-        localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      }
+      // Guardar sesión (almacenamiento persistente o de sesión según remember)
+      saveSession({ token, user: userData }, remember);
 
       return response.data;
     } catch (error) {
@@ -58,8 +54,7 @@ export const authService = {
    * @returns {Object|null}
    */
   getCurrentUser: () => {
-    const user = localStorage.getItem(USER_KEY);
-    return user ? JSON.parse(user) : null;
+    return getUser();
   },
 
   /**
@@ -67,7 +62,7 @@ export const authService = {
    * @returns {boolean}
    */
   isAuthenticated: () => {
-    return !!localStorage.getItem(TOKEN_KEY);
+    return !!getToken();
   },
 
   /**
@@ -75,7 +70,7 @@ export const authService = {
    * @returns {string|null}
    */
   getToken: () => {
-    return localStorage.getItem(TOKEN_KEY);
+    return getToken();
   },
 };
 

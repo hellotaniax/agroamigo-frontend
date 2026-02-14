@@ -35,7 +35,8 @@ export const apiAuth = axios.create({
 // ===============================
 apiApp.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    // leer token desde localStorage o sessionStorage
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

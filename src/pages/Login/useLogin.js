@@ -60,7 +60,7 @@ export default function useLogin(initialValues = { email: '', password: '', reme
     setIsLoading(true);
 
     try {
-      await authService.login(formData.email, formData.password);
+      await authService.login(formData.email, formData.password, formData.remember);
 
       if (!formData.remember) {
         window.addEventListener('beforeunload', () => {

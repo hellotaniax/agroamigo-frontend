@@ -1,5 +1,6 @@
 import './AdminHeader.css';
 import BreadcrumbItem from '../BreadcrumbItem';
+import authService from '../../services/auth.service';
 
 export default function AdminHeader({ onMenuClick, breadcrumbs = [] }) {
   return (
@@ -15,10 +16,16 @@ export default function AdminHeader({ onMenuClick, breadcrumbs = [] }) {
         </button>
         <div className="header-spacer flex-grow-1" />
         <div className="header-user d-flex align-items-center">
-        <button className='logout-btn' onClick={() => {
-          localStorage.removeItem('token');
-          window.location.href = '/login';
-        }}>Cerrar sesión</button>
+        <button
+          className="logout-btn"
+          onClick={() => {
+            authService.logout();
+            // fuerza redirección segura a login
+            window.location.replace('/login');
+          }}
+        >
+          Cerrar sesión
+        </button>
         </div>
         
         {/* Futuro: usuario / notificaciones */}
