@@ -1,76 +1,79 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useState } from 'react';
+import cultivosService from '../../services/cultivos.service';
+import catalogosService from '../../services/catalogos.service';
 
-export default function useCultivosData(options = {}) {
+export default function useCultivosData() {
   const [cultivos, setCultivos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { estado = '', nombre = '' } = options;
 
-  const filterData = useCallback(
-    (data) => data.filter(c =>
-      (!estado || c.estadoNombre === estado) &&
-      (!nombre || c.nombrecul.toLowerCase().includes(nombre.toLowerCase()))
-    ),
-    [estado, nombre]
-  );
+  const loadData = async () => {
+    try {
+      setLoading(true);
+
+      const [cultivosData, tipos, estados] = await Promise.all([
+        cultivosService.getAll(),
+        catalogosService.getTiposCultivo(),
+        catalogosService.getEstados(),
+      ]);
+
+      // 🔥 Mapear nombres correctamente
+      const enriched = cultivosData.map(c => ({
+        ...c,
+        tipoNombre: tipos.find(t => t.idtcul === c.idtcul)?.nombretcul || '—',
+        estadoNombre: estados.find(e => e.idest === c.idest)?.nombreest || '—',
+      }));
+
+      setCultivos(enriched);
+    } catch (error) {
+      console.error('Error cargando cultivos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ NUEVA FUNCIÓN: Agregar cultivo
+  const addCultivo = async (data) => {
+    try {
+      await cultivosService.create(data);
+      await loadData(); // Recargar lista después de agregar
+    } catch (error) {
+      console.error('Error agregando cultivo:', error);
+      throw error; // Propagar el error para manejarlo en el componente
+    }
+  };
+
+  // ✅ NUEVA FUNCIÓN: Actualizar cultivo
+  const updateCultivo = async (id, data) => {
+    try {
+      await cultivosService.update(id, data);
+      await loadData(); // Recargar lista después de actualizar
+    } catch (error) {
+      console.error('Error actualizando cultivo:', error);
+      throw error;
+    }
+  };
+
+  // ✅ NUEVA FUNCIÓN: Eliminar cultivo
+  const deleteCultivo = async (id) => {
+    try {
+      await cultivosService.remove(id);
+      await loadData(); // Recargar lista después de eliminar
+    } catch (error) {
+      console.error('Error eliminando cultivo:', error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
-    let mounted = true;
+    loadData();
+  }, []);
 
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = [
-          { idcul: 'CUL-01', nombrecul: 'Tomate', tipoNombre: 'Hortaliza', idest: 1, estadoNombre: 'Activo', creacioncul: '2026-02-05T12:00:00' },
-          { idcul: 'CUL-02', nombrecul: 'Lechuga', tipoNombre: 'Hortaliza', idest: 2, estadoNombre: 'Archivado', creacioncul: '2026-02-01T12:00:00' },
-        ];
-        if (mounted) {
-          setCultivos(filterData(data));
-          setLoading(false);
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(err);
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-    return () => { mounted = false; };
-  }, [filterData]);
-
-  // Mappings para tipos y estados (simulados)
-  const tiposMap = {
-    '1': 'Hortaliza',
-    '2': 'Fruta',
-    '3': 'Grano',
-    '99': 'Otro',
+  return { 
+    cultivos, 
+    loading, 
+    reload: loadData,
+    addCultivo,      // ✅ Ahora sí existe
+    updateCultivo,   // ✅ Para edición futura
+    deleteCultivo,   // ✅ Para eliminación futura
   };
-
-  const estadosMap = {
-    '1': 'Activo',  
-    '3': 'Borrador',
-    '2': 'Archivado',
-  };
-
-  // Función para agregar un cultivo (simula insertar en backend)
-  const addCultivo = (data) => {
-    const nextIdNumber = cultivos.length + 1;
-    const newId = `CUL-${String(nextIdNumber).padStart(2, '0')}`;
-    const newCultivo = {
-      idcul: newId,
-      nombrecul: data.nombrecul || '',
-      idtcul: data.idtcul || '',
-      tipoNombre: tiposMap[String(data.idtcul)] || data.tipoNombre || '',
-      idest: data.idest || '',
-      estadoNombre: estadosMap[String(data.idest)] || data.estadoNombre || '',
-      creacioncul: new Date().toISOString(),
-    };
-
-    setCultivos(prev => [newCultivo, ...prev]);
-  };
-
-  return { cultivos, loading, error, addCultivo };
 }

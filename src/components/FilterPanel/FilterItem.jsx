@@ -1,5 +1,5 @@
 import React from 'react';
-import './FilterPanel.css'; // importa tu CSS
+import './FilterPanel.css';
 
 export default function FilterItem({ filter, value, onChange }) {
   const handleChange = e => onChange(e.target.value);
@@ -32,8 +32,16 @@ export default function FilterItem({ filter, value, onChange }) {
             value={value}
             onChange={handleChange}
           >
-            {filter.options.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            {/* ✅ Opción vacía por defecto con key única */}
+            <option key="empty" value="">
+              {filter.placeholder || 'Todos'}
+            </option>
+            
+            {/* ✅ Renderizar opciones con key única */}
+            {filter.options?.map(opt => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
         </div>

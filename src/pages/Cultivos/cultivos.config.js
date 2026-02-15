@@ -1,24 +1,40 @@
-
 import { BiSearch } from 'react-icons/bi';
 
-
+/**
+ * ===============================
+ * Configuración del formulario
+ * ⚠️ Opciones dinámicas desde backend
+ * ===============================
+ */
 export const cultivoFormConfig = [
-  { key: 'nombrecul', label: 'Nombre', type: 'text', required: true, placeholder: 'Ingrese nombre del cultivo' },
-  { key: 'idtcul', label: 'Tipo de cultivo', type: 'select', required: true, options: [
-    { value: '', label: 'Seleccione tipo...' },
-    { value: '1', label: 'Hortaliza' },
-    { value: '2', label: 'Fruta' },
-    { value: '3', label: 'Grano' },
-    { value: '99', label: 'Otro' },
-  ] },
-  { key: 'idest', label: 'Estado', type: 'select', required: true, options: [
-    { value: '', label: 'Seleccione estado...' },
-    { value: '1', label: 'Activo' },
-    { value: '2', label: 'Archivado' },
-    { value: '3', label: 'Borrador' },
-  ] },
+  {
+    key: 'nombrecul',
+    label: 'Nombre',
+    type: 'text',
+    required: true,
+    placeholder: 'Ingrese nombre del cultivo',
+  },
+  {
+    key: 'idtcul',
+    label: 'Tipo de cultivo',
+    type: 'select',
+    required: true,
+    options: [], // ← se llenan dinámicamente desde la API
+  },
+  {
+    key: 'idest',
+    label: 'Estado',
+    type: 'select',
+    required: true,
+    options: [], // ← se llenan dinámicamente desde la API
+  },
 ];
 
+/**
+ * ===============================
+ * Configuración de filtros
+ * ===============================
+ */
 export const cultivosFiltersConfig = [
   {
     key: 'search',
@@ -31,12 +47,7 @@ export const cultivosFiltersConfig = [
     key: 'state',
     label: 'Estado',
     type: 'select',
-    options: [
-      { value: '', label: 'Todos' },
-      { value: 'Activo', label: 'Activo' },
-      { value: 'Borrador', label: 'Borrador' },  
-      { value: 'Archivado', label: 'Archivado' },   
-    ],
+    options: [], // ← se llenan desde catálogo de estados
   },
   {
     key: 'date',
@@ -45,8 +56,12 @@ export const cultivosFiltersConfig = [
   },
 ];
 
+/**
+ * ===============================
+ * Columnas de la tabla
+ * ===============================
+ */
 export const cultivosColumns = [
-  { header: 'ID', accessor: 'idcul' },
   { header: 'Nombre', accessor: 'nombrecul' },
   { header: 'Tipo', accessor: 'tipoNombre' },
   { header: 'Estado', accessor: 'estadoNombre' },

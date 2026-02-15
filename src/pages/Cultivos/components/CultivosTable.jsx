@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import TableCard from '../../../components/TableCard';
 import { cultivosColumns } from '../cultivos.config';
 import { getBadgeClass } from '../../../utils/badgeStates';
@@ -7,14 +7,14 @@ import { ButtonPrimary } from '../../../components/Buttons';
 import { BiEdit } from 'react-icons/bi';
 import CultivoForm from './CultivoForm';
 import Modal from '../../../components/Modal';
+import cultivosService from '../../../services/cultivos.service';
 
-export default function CultivosTable({ data, loading, showActions = true }) {
+export default function CultivosTable({ data, loading, showActions = true, onDataChange }) {
   const [editingCultivo, setEditingCultivo] = useState(null);
-  const [tableData, setTableData] = useState(data);
 
-  useEffect(() => {
-    setTableData(data);
-  }, [data]);
+  // =========================
+  // Renderizadores
+  // =========================
 
   const renderEstado = (row) => (
     <span className={`badge ${getBadgeClass(row.estadoNombre)}`}>
@@ -30,6 +30,10 @@ export default function CultivosTable({ data, loading, showActions = true }) {
     return col;
   });
 
+  // =========================
+  // Acciones por fila
+  // =========================
+
   const rowActions = showActions
     ? (row) => (
         <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
@@ -42,44 +46,37 @@ export default function CultivosTable({ data, loading, showActions = true }) {
 
   const handleFormClose = () => setEditingCultivo(null);
 
-  // Mapeos para convertir IDs a nombres
-  const tiposMap = {
-    '1': 'Hortaliza',
-    '2': 'Fruta',
-    '3': 'Grano',
-    '99': 'Otro',
+  // =========================
+  // Actualizar cultivo (API)
+  // =========================
+
+  const handleFormSubmit = async (updatedCultivo) => {
+    try {
+      const id = editingCultivo.idcul;
+      await cultivosService.update(id, updatedCultivo);
+
+      setEditingCultivo(null);
+      
+      // ✅ Notificar al padre para recargar los datos
+      if (onDataChange) {
+        onDataChange();
+      }
+    } catch (error) {
+      console.error('Error actualizando cultivo:', error);
+      alert('Error al actualizar el cultivo');
+    }
   };
 
-  const estadosMap = {
-    '1': 'Activo',
-    '2': 'Archivado',
-    '3': 'Borrador',
-  };
-
-  const handleFormSubmit = (updatedCultivo) => {
-    console.log('Cultivo actualizado:', updatedCultivo);
-
-    // Convertir IDs a nombres antes de guardar
-    const cultivoConNombres = {
-      ...updatedCultivo,
-      tipoNombre: tiposMap[String(updatedCultivo.idtcul)] || updatedCultivo.tipoNombre,
-      estadoNombre: estadosMap[String(updatedCultivo.idest)] || updatedCultivo.estadoNombre,
-    };
-
-    // Actualiza tabla localmente
-    setTableData(prev =>
-      prev.map(c => (c.idcul === cultivoConNombres.idcul ? cultivoConNombres : c))
-    );
-
-    setEditingCultivo(null);
-  };
+  // =========================
+  // Render
+  // =========================
 
   return (
     <>
       <TableCard
         title="Cultivos registrados"
         columns={columns}
-        data={tableData}
+        data={data}
         loading={loading}
         rowActions={rowActions}
       />

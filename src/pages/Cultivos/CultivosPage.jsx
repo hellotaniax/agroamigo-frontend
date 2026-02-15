@@ -8,22 +8,29 @@ import { AddButton } from '../../components/Buttons';
 import { useState } from 'react';
 
 export default function CultivosPage() {
-  const { cultivos, loading, addCultivo } = useCultivosData(); // addCultivo para guardar
+  const { cultivos, loading, addCultivo, reload } = useCultivosData(); // ✅ Agregar reload
   const [filters, setFilters] = useState({ search: '', state: '', date: '' });
   const [showForm, setShowForm] = useState(false);
+  const [formError, setFormError] = useState(null);
 
   // Filtrado de cultivos según filtros activos
   const filteredCultivos = cultivos.filter(c => {
     const rowDate = new Date(c.creacioncul).toISOString().slice(0,10);
     return c.nombrecul.toLowerCase().includes(filters.search.toLowerCase()) &&
-           (filters.state === '' || c.estadoNombre === filters.state) &&
+           (filters.state === '' || c.idest === parseInt(filters.state)) &&
            (filters.date === '' || rowDate === filters.date);
   });
 
   // Callback para agregar un cultivo
-  const handleAdd = (data) => {
-    addCultivo(data);        // Inserta en backend / state
-    setShowForm(false);       // Cierra el formulario
+  const handleAdd = async (data) => {
+    try {
+      setFormError(null);
+      await addCultivo(data);
+      setShowForm(false);
+    } catch (error) {
+      setFormError('Error al guardar el cultivo. Inténtalo de nuevo.');
+      console.error(error);
+    }
   };
 
   return (
@@ -36,17 +43,31 @@ export default function CultivosPage() {
 
       {/* Formulario modal / panel para agregar cultivo */}
       {showForm && (
-        <CultivoForm
-          onSubmit={handleAdd}
-          onCancel={() => setShowForm(false)}
-        />
+        <div>
+          {formError && (
+            <div className="alert alert-danger" role="alert">
+              {formError}
+            </div>
+          )}
+          <CultivoForm
+            onSubmit={handleAdd}
+            onCancel={() => {
+              setShowForm(false);
+              setFormError(null);
+            }}
+          />
+        </div>
       )}
 
       {/* Panel de filtros */}
       <CultivosFilter onFiltersChange={setFilters} />
 
       {/* Tabla de cultivos filtrados */}
-      <CultivosTable data={filteredCultivos} loading={loading} />
+      <CultivosTable 
+        data={filteredCultivos} 
+        loading={loading}
+        onDataChange={reload} // ✅ Pasar función reload
+      />
     </AdminLayout>
   );
 }

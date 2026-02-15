@@ -1,4 +1,3 @@
-
 export default function FormItem({ field, value, onChange }) {
   const handleChange = (e) => onChange(e.target.value);
 
@@ -10,7 +9,7 @@ export default function FormItem({ field, value, onChange }) {
           <input
             type="text"
             className="form-control"
-            value={value}
+            value={value || ''} // ✅ Siempre string, nunca undefined
             onChange={handleChange}
             placeholder={field.placeholder}
             required={field.required}
@@ -24,7 +23,7 @@ export default function FormItem({ field, value, onChange }) {
           <input
             type="number"
             className="form-control"
-            value={value}
+            value={value || ''} // ✅ Siempre string, nunca undefined
             onChange={handleChange}
             placeholder={field.placeholder}
             required={field.required}
@@ -35,8 +34,17 @@ export default function FormItem({ field, value, onChange }) {
       return (
         <div className="mb-2">
           {field.label && <label className="form-label">{field.label}</label>}
-          <select className="form-select" value={value} onChange={handleChange} required={field.required}>
-            {field.options.map((opt) => (
+          <select 
+            className="form-select" 
+            value={value || ''} // ✅ Siempre string, nunca undefined
+            onChange={handleChange} 
+            required={field.required}
+          >
+            {/* ✅ Opción vacía por defecto */}
+            <option value="" disabled>
+              Seleccione una opción
+            </option>
+            {field.options?.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
