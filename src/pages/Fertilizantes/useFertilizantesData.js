@@ -1,80 +1,94 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import fertilizantesService from '../../services/fertilizantes.service';
+import catalogosService from '../../services/catalogos.service';
 
-export default function useFertilizantesData(options = {}) {
-  const [fertilizantes, setFertilizantes] = useState([]);
+export default function useFertilizantesData(filters = {}) {
+  const [fertilizantesRaw, setFertilizantesRaw] = useState([]); // datos originales sin filtrar
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { estado = '', nombre = '', tipo = '' } = options;
 
-  const filterData = useCallback(
-    (data) => data.filter(f =>
-      (!estado || f.estadoNombre === estado) &&
-      (!nombre || f.nombrefer.toLowerCase().includes(nombre.toLowerCase())) &&
-      (!tipo || f.tipoNombre === tipo)
-    ),
-    [estado, nombre, tipo]
-  );
+  const { estado = '', nombre = '', tipo = '' } = filters;
 
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchData = async () => {
+  // Cargar datos desde backend (solo una vez)
+  const loadData = async () => {
+    try {
       setLoading(true);
       setError(null);
-      try {
-        const data = [
-          { idfer: 'FER-01', nombrefer: 'Urea', tipoNombre: 'Nitrogenado', descripcionfer: 'Fertilizante nitrogenado de alta concentración', idest: 1, estadoNombre: 'Activo'},
-          { idfer: 'FER-02', nombrefer: 'Superfosfato triple', tipoNombre: 'Fosfatado', descripcionfer: 'Fosfato soluble para mayor disponibilidad', idest: 1, estadoNombre: 'Activo'},
-          { idfer: 'FER-03', nombrefer: 'Cloruro de potasio', tipoNombre: 'Potásico', descripcionfer: 'Potasio de alta pureza', idest: 1, estadoNombre: 'Activo'},
-        ];
-        if (mounted) {
-          setFertilizantes(filterData(data));
-          setLoading(false);
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(err);
-          setLoading(false);
-        }
-      }
-    };
 
-    fetchData();
-    return () => { mounted = false; };
-  }, [filterData]);
+      const [fertData, tipos, estados] = await Promise.all([
+        fertilizantesService.getAll(),
+        catalogosService.getTiposFertilizantes(),
+        catalogosService.getEstados(),
+      ]);
 
-  // Mapeos para tipos y estados
-  const tiposMap = {
-    '1': 'Nitrogenado',
-    '2': 'Fosfatado',
-    '3': 'Potásico',
-    '4': 'Complejo NPK',
-    '5': 'Micronutrientes',
-    '99': 'Otro',
+      const enriched = fertData.map(f => ({
+        ...f,
+        tipoNombre: tipos.find(t => t.idtfer === f.idtfer)?.nombretfer || '—',
+        estadoNombre: estados.find(e => e.idest === f.idest)?.nombreest || '—',
+      }));
+
+      setFertilizantesRaw(enriched);
+    } catch (err) {
+      console.error('Error cargando fertilizantes:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const estadosMap = {
-    '1': 'Activo',
-    '2': 'Archivado',
-    '3': 'Borrador',
+  // Filtrar en memoria con useMemo (se recalcula solo si cambian filtros o datos)
+  const fertilizantes = useMemo(() => {
+    return fertilizantesRaw.filter(f =>
+      (!estado || f.estadoNombre === estado) &&
+      (!tipo || f.tipoNombre === tipo) &&
+      (!nombre || f.nombrefer.toLowerCase().includes(nombre.toLowerCase()))
+    );
+  }, [fertilizantesRaw, estado, tipo, nombre]);
+
+  // Agregar fertilizante
+  const addFertilizante = async (data) => {
+    try {
+      await fertilizantesService.create(data);
+      await loadData(); // recargar lista original
+    } catch (err) {
+      console.error('Error agregando fertilizante:', err);
+      throw err;
+    }
   };
 
-  // Función para agregar un fertilizante
-  const addFertilizante = (data) => {
-    const nextIdNumber = fertilizantes.length + 1;
-    const newId = `FER-${String(nextIdNumber).padStart(2, '0')}`;
-    const newFertilizante = {
-      idfer: newId,
-      nombrefer: data.nombrefer || '',
-      idtfer: data.idtfer || '',
-      tipoNombre: tiposMap[String(data.idtfer)] || data.tipoNombre || '',
-      descripcionfer: data.descripcionfer || '',
-      idest: data.idest || '',
-      estadoNombre: estadosMap[String(data.idest)] || data.estadoNombre || '',
-    };
-
-    setFertilizantes(prev => [newFertilizante, ...prev]);
+  // Actualizar fertilizante
+  const updateFertilizante = async (id, data) => {
+    try {
+      await fertilizantesService.update(id, data);
+      await loadData();
+    } catch (err) {
+      console.error('Error actualizando fertilizante:', err);
+      throw err;
+    }
   };
 
-  return { fertilizantes, loading, error, addFertilizante };
+  // Eliminar fertilizante
+  const deleteFertilizante = async (id) => {
+    try {
+      await fertilizantesService.remove(id);
+      await loadData();
+    } catch (err) {
+      console.error('Error eliminando fertilizante:', err);
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    loadData(); // cargar datos al montar
+  }, []);
+
+  return {
+    fertilizantes,
+    loading,
+    error,
+    reload: loadData,
+    addFertilizante,
+    updateFertilizante,
+    deleteFertilizante,
+  };
 }

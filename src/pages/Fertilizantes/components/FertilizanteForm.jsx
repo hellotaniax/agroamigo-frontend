@@ -1,61 +1,90 @@
 import React, { useState, useEffect } from 'react';
 import { FormPanel } from '../../../components/FormPanel';
 import { fertilizanteFormConfig } from '../fertilizantes.config';
-
-// Constantes de configuración
-const TIPOS_MAP_INVERSE = {
-  'Nitrogenado': '1',
-  'Fosfatado': '2',
-  'Potásico': '3',
-  'Complejo NPK': '4',
-  'Micronutrientes': '5',
-  'Otro': '99',
-};
-
-const ESTADOS_MAP_INVERSE = {
-  'Activo': '1',
-  'Archivado': '2',
-  'Borrador': '3',
-};
-
-// Generar el estado inicial vacío una sola vez
-const INITIAL_EMPTY_STATE = Object.fromEntries(
-  fertilizanteFormConfig.map(f => [f.key, ''])
-);
+import useCatalogos from '../../../hooks/useCatalogos';
 
 export default function FertilizanteForm({ onSubmit, onCancel, initialValues }) {
-  const [formValues, setFormValues] = useState(INITIAL_EMPTY_STATE);
+  const { tiposFertilizantes, estados, loading } = useCatalogos();
+
+  // =========================
+  // Inicializar valores del formulario
+  // =========================
+  const [formValues, setFormValues] = useState({
+    nombrefer: '',
+    idtfer: '',
+    descripcionfer: '',
+    idest: '',
+  });
 
   useEffect(() => {
     if (initialValues) {
-      const processedValues = {
-        ...initialValues,
-        idtfer: initialValues.idtfer || TIPOS_MAP_INVERSE[initialValues.tipoNombre] || '',
-        idest: initialValues.idest || ESTADOS_MAP_INVERSE[initialValues.estadoNombre] || '',
-      };
-      setFormValues(processedValues);
+      setFormValues({
+        idfer: initialValues.idfer, // importante para edición
+        nombrefer: initialValues.nombrefer || '',
+        idtfer: initialValues.idtfer || '',
+        descripcionfer: initialValues.descripcionfer || '',
+        idest: initialValues.idest || '',
+      });
     } else {
-      setFormValues(INITIAL_EMPTY_STATE);
+      setFormValues({
+        nombrefer: '',
+        idtfer: '',
+        descripcionfer: '',
+        idest: '',
+      });
     }
-  }, [initialValues]); // Dependencias optimizadas
+  }, [initialValues]);
 
-  const handleChange = (key) => (value) => 
+  // =========================
+  // Config dinámica del formulario
+  // =========================
+  const dynamicConfig = fertilizanteFormConfig.map(field => {
+    if (field.key === 'idtfer') return { ...field, options: tiposFertilizantes };
+    if (field.key === 'idest') return { ...field, options: estados };
+    return field;
+  });
+
+  // =========================
+  // Manejo de cambios
+  // =========================
+  const handleChange = (key) => (value) =>
     setFormValues(prev => ({ ...prev, [key]: value }));
 
+  // =========================
+  // Submit con validación
+  // =========================
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formValues);
-    // Opcional: solo resetear si es un formulario de creación (sin initialValues)
-    if (!initialValues) setFormValues(INITIAL_EMPTY_STATE);
+
+    // Validar campos requeridos
+    if (!formValues.nombrefer || !formValues.idtfer || !formValues.idest) {
+      alert('Por favor complete todos los campos obligatorios');
+      return;
+    }
+
+    const dataToSend = {
+      nombrefer: formValues.nombrefer.trim(),
+      idtfer: parseInt(formValues.idtfer),
+      descripcionfer: formValues.descripcionfer || '',
+      idest: parseInt(formValues.idest),
+    };
+
+    if (formValues.idfer) dataToSend.idfer = formValues.idfer;
+
+    onSubmit(dataToSend);
   };
 
+  // =========================
+  // Render
+  // =========================
   return (
     <FormPanel
-      formConfig={fertilizanteFormConfig}
+      formConfig={dynamicConfig}
       values={formValues}
       onChange={handleChange}
       onSubmit={handleSubmit}
       onCancel={onCancel}
+      loading={loading} // opcional: si quieres deshabilitar mientras cargan catálogos
     />
   );
 }

@@ -52,25 +52,25 @@ export default function CultivoForm({ initialValues, onSubmit, onCancel }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // ✅ Validar que los campos requeridos estén llenos
+    // Validar que los campos requeridos estén llenos
     if (!formValues.nombrecul || !formValues.idtcul || !formValues.idest) {
       alert('Por favor complete todos los campos obligatorios');
       return;
     }
 
-    // ✅ Preparar datos - INCLUIR idcul si existe (modo edición)
+    //Preparar datos - INCLUIR idcul si existe (modo edición)
     const dataToSend = {
       nombrecul: formValues.nombrecul.trim(),
       idtcul: parseInt(formValues.idtcul),
       idest: parseInt(formValues.idest),
     };
 
-    // ✅ Si es edición, incluir el ID
+    // Si es edición, incluir el ID
     if (formValues.idcul) {
       dataToSend.idcul = formValues.idcul;
     }
 
-    console.log('Datos a enviar:', dataToSend); // ✅ Para debug
+    console.log('Datos a enviar:', dataToSend); // Para debug
     onSubmit(dataToSend);
   };
 
