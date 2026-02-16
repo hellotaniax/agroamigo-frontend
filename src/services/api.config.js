@@ -5,10 +5,10 @@ import { clearSession } from '../utils/sessionManager';
 // Configuración base
 // ===============================
 const API_APP_URL =
-  import.meta.env.VITE_API_APP_URL || 'http://localhost:3276/api/app';
+  process.env.REACT_APP_API_APP_URL || 'http://localhost:3276/api/app';
 
 const API_AUTH_URL =
-  import.meta.env.VITE_API_AUTH_URL || 'http://localhost:3276/api/app/auth';
+  process.env.REACT_APP_API_AUTH_URL || 'http://localhost:3276/api/app/auth';
 
 // ===============================
 // Instancia para endpoints protegidos
@@ -31,7 +31,7 @@ export const apiAuth = axios.create({
 });
 
 // ===============================
-// Interceptor: agregar JWT automáticamente
+// Interceptor REQUEST: agregar JWT automáticamente (solo para apiApp)
 // ===============================
 apiApp.interceptors.request.use(
   (config) => {
@@ -48,7 +48,7 @@ apiApp.interceptors.request.use(
 );
 
 // ===============================
-// Interceptor: manejo global de errores
+// Interceptor RESPONSE: manejo global de errores para apiApp
 // ===============================
 apiApp.interceptors.response.use(
   (response) => response,
@@ -74,16 +74,12 @@ apiApp.interceptors.response.use(
 );
 
 // ===============================
-// Interceptor opcional para auth
+// Interceptor RESPONSE: manejo de errores para apiAuth
 // ===============================
-apiApp.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
+apiAuth.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('Error en autenticación:', error.response?.data || error.message);
+    return Promise.reject(error);
+  }
 );
