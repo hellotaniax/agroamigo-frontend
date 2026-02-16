@@ -31,7 +31,6 @@ export default function useCultivosData() {
     }
   };
 
-  // ✅ NUEVA FUNCIÓN: Agregar cultivo
   const addCultivo = async (data) => {
     try {
       await cultivosService.create(data);
@@ -42,7 +41,6 @@ export default function useCultivosData() {
     }
   };
 
-  // ✅ NUEVA FUNCIÓN: Actualizar cultivo
   const updateCultivo = async (id, data) => {
     try {
       await cultivosService.update(id, data);
@@ -53,7 +51,6 @@ export default function useCultivosData() {
     }
   };
 
-  // ✅ NUEVA FUNCIÓN: Eliminar cultivo
   const deleteCultivo = async (id) => {
     try {
       await cultivosService.remove(id);
@@ -72,8 +69,8 @@ export default function useCultivosData() {
     cultivos, 
     loading, 
     reload: loadData,
-    addCultivo,      // ✅ Ahora sí existe
-    updateCultivo,   // ✅ Para edición futura
-    deleteCultivo,   // ✅ Para eliminación futura
+    addCultivo,      
+    updateCultivo,   
+    deleteCultivo,   // futuro: botón eliminar en la tabla
   };
 }
