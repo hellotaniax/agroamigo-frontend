@@ -24,6 +24,7 @@ export default function AdminHeader({ onMenuClick, breadcrumbs = [] }) {
             window.location.replace('/login');
           }}
         >
+          <i className="bi bi-box-arrow-right me-2" aria-hidden="true" />
           Cerrar sesión
         </button>
         </div>
