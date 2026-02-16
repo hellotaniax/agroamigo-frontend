@@ -23,7 +23,8 @@ export default function MensajesPage() {
     estados, 
     loading, 
     reload, 
-    addMensaje 
+    addMensaje,
+    updateMensaje 
   } = useMensajesData(filters);
 
   // =========================
@@ -35,8 +36,7 @@ export default function MensajesPage() {
         return {
           ...field,
           options: [
-            { value: '', label: 'Seleccione estado...' },
-            ...estados.map(e => ({ value: e.idest, label: e.nombreest }))
+            ...estados.map(e => ({ value: String(e.idest), label: e.nombreest })) // Aseguramos que el value sea string
           ]
         };
       }
@@ -52,7 +52,7 @@ export default function MensajesPage() {
       setFormError(null);
       await addMensaje(data);
       setShowForm(false);
-      reload();
+      // reload(); // Opcional, el hook ya debería tener el reload dentro del addMensaje
     } catch (error) {
       setFormError('Error al guardar el mensaje. Inténtalo de nuevo.');
       console.error(error);
@@ -102,6 +102,7 @@ export default function MensajesPage() {
       <MensajesTable 
         data={mensajes}
         loading={loading}
+        onUpdate={updateMensaje} // 
         onDataChange={reload}
         configForm={formConfigWithOptions}
       />

@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import recomendacionesService from '../../services/recomendaciones.service'; 
 import catalogosService from '../../services/catalogos.service';
+import { toast } from 'react-hot-toast'; // 
 
 export default function useRecomendacionesData(filters = {}) {
   const [recomendacionesRaw, setRecomendacionesRaw] = useState([]);
-  // NUEVOS ESTADOS: Necesarios para que la página genere los config
   const [estados, setEstados] = useState([]); 
   const [prioridades, setPrioridades] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,6 @@ export default function useRecomendacionesData(filters = {}) {
         catalogosService.getPrioridades(),
       ]);
 
-      // Guardamos los catálogos crudos para los selectores
       setEstados(estData);
       setPrioridades(priData);
 
@@ -56,6 +55,7 @@ export default function useRecomendacionesData(filters = {}) {
     loadData();
   }, [loadData]);
 
+  // ✅ 2. Implementación de funciones con toast.promise
   return {
     recomendaciones,
     recomendacionesRaw,
@@ -64,13 +64,50 @@ export default function useRecomendacionesData(filters = {}) {
     loading,
     error,
     reload: loadData,
+
+    // AGREGAR
     addRecomendacion: async (data) => {
-      await recomendacionesService.create(data);
-      await loadData();
+      return toast.promise(
+        (async () => {
+          await recomendacionesService.create(data);
+          await loadData();
+        })(),
+        {
+          loading: 'Guardando recomendación...',
+          success: '¡Recomendación creada!',
+          error: 'Error al guardar la recomendación.',
+        }
+      );
     },
+
+    // EDITAR 
+    updateRecomendacion: async (id, data) => {
+      return toast.promise(
+        (async () => {
+          await recomendacionesService.update(id, data);
+          await loadData();
+        })(),
+        {
+          loading: 'Actualizando recomendación...',
+          success: '¡Cambios guardados con éxito!',
+          error: 'Error al actualizar.',
+        }
+      );
+    },
+
+    // ELIMINAR
     deleteRecomendacion: async (id) => {
-      await recomendacionesService.remove(id);
-      await loadData();
+      return toast.promise(
+        (async () => {
+          await recomendacionesService.remove(id);
+          await loadData();
+        })(),
+        {
+          loading: 'Eliminando recomendación...',
+          success: 'Recomendación eliminada correctamente.',
+          error: 'No se pudo eliminar la recomendación.',
+        }
+      );
     }
   };
 }

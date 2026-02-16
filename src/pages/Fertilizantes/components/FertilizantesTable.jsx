@@ -8,7 +8,7 @@ import fertilizantesService from '../../../services/fertilizantes.service';
 import { BiEdit } from 'react-icons/bi';
 import { ButtonPrimary } from '../../../components/Buttons';
 
-export default function FertilizantesTable({ data, loading, onDataChange, showActions = true }) {
+export default function FertilizantesTable({ data, loading, onDataChange, onUpdate, onDelete, showActions = true }) {
   const [editingFert, setEditingFert] = useState(null);
 
   const renderEstado = (row) => (
@@ -36,12 +36,12 @@ export default function FertilizantesTable({ data, loading, onDataChange, showAc
 
   const handleFormSubmit = async (updatedFert) => {
     try {
-      await fertilizantesService.update(updatedFert.idfer, updatedFert);
+      if (editingFert && onUpdate) {
+        await onUpdate(editingFert.idfer, updatedFert);
+      }
       setEditingFert(null);
-      if (onDataChange) onDataChange(); // ✅ Dispara reload en el page
     } catch (error) {
-      console.error('Error actualizando fertilizante:', error);
-      alert('Error al actualizar el fertilizante');
+      console.error('Error en submit tabla:', error);
     }
   };
 
@@ -54,7 +54,6 @@ export default function FertilizantesTable({ data, loading, onDataChange, showAc
         loading={loading}
         rowActions={rowActions}
       />
-
       {editingFert && (
         <Modal onClose={handleFormClose}>
           <FertilizanteForm

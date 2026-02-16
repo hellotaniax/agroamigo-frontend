@@ -10,13 +10,16 @@ import RecomendacionesPage from './pages/Recomendaciones';
 import UsuariosPage from './pages/Usuarios';
 import ProtectedRoute from './routes/ProtectedRoute';
 import authService from './services/auth.service';
+import { Toaster } from 'react-hot-toast'; // ✅ Importado correctamente
+import { toastConfig } from './config/toast.config';
 import './styles/index.css';
 
 function App() {
   return (
     <Router>
-      <Routes>
+      <Toaster {...toastConfig} />
 
+      <Routes> 
         {/* ===================== */}
         {/* RUTAS PÚBLICAS */}
         {/* ===================== */}

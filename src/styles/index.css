@@ -114,3 +114,37 @@ body {
     padding: 16px;
   }
 }
+
+/* =========================
+   ESTILOS DE NOTIFICACIONES (TOAST)
+   ========================= */
+
+
+.toast-base {
+  padding: 16px;
+  font-weight: 500; /* Letra un poco más gruesa */
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra elegante */
+  border-radius: 8px;
+}
+
+
+.toast-success {
+  background-color: #e8f5e9 !important;
+  color: #2d5a27 !important;
+  border: 1px solid #2d5a27;
+}
+
+
+.toast-error {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  border: 1px solid #c62828;
+}
+
+
+.toast-loading {
+  background-color: #ffffff !important;
+  color: #6c757d !important;
+  border: 1px solid #e6e6e6;
+}

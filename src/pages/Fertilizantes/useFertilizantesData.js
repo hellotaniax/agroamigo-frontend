@@ -1,20 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react'; // Agregamos useCallback
 import fertilizantesService from '../../services/fertilizantes.service';
 import catalogosService from '../../services/catalogos.service';
+import { toast } from 'react-hot-toast'; 
 
 export default function useFertilizantesData(filters = {}) {
-  const [fertilizantesRaw, setFertilizantesRaw] = useState([]); // datos originales sin filtrar
+  const [fertilizantesRaw, setFertilizantesRaw] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const { estado = '', nombre = '', tipo = '' } = filters;
 
-  // Cargar datos desde backend (solo una vez)
-  const loadData = async () => {
+  // Convertimos loadData a useCallback para estabilidad
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-
       const [fertData, tipos, estados] = await Promise.all([
         fertilizantesService.getAll(),
         catalogosService.getTiposFertilizantes(),
@@ -34,9 +34,8 @@ export default function useFertilizantesData(filters = {}) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Filtrar en memoria con useMemo (se recalcula solo si cambian filtros o datos)
   const fertilizantes = useMemo(() => {
     return fertilizantesRaw.filter(f =>
       (!estado || f.estadoNombre === estado) &&
@@ -45,42 +44,50 @@ export default function useFertilizantesData(filters = {}) {
     );
   }, [fertilizantesRaw, estado, tipo, nombre]);
 
-  // Agregar fertilizante
+
   const addFertilizante = async (data) => {
-    try {
-      await fertilizantesService.create(data);
-      await loadData(); // recargar lista original
-    } catch (err) {
-      console.error('Error agregando fertilizante:', err);
-      throw err;
-    }
+    return toast.promise(
+      (async () => {
+        await fertilizantesService.create(data);
+        await loadData();
+      })(),
+      {
+        loading: 'Guardando fertilizante...',
+        success: '¡Fertilizante agregado con éxito!',
+        error: 'Error al intentar guardar.',
+      }
+    );
   };
 
-  // Actualizar fertilizante
   const updateFertilizante = async (id, data) => {
-    try {
-      await fertilizantesService.update(id, data);
-      await loadData();
-    } catch (err) {
-      console.error('Error actualizando fertilizante:', err);
-      throw err;
-    }
+    return toast.promise(
+      (async () => {
+        await fertilizantesService.update(id, data);
+        await loadData();
+      })(),
+      {
+        loading: 'Actualizando datos...',
+        success: '¡Cambios guardados correctamente!',
+        error: 'No se pudo actualizar el fertilizante.',
+      }
+    );
   };
 
-  // Eliminar fertilizante
   const deleteFertilizante = async (id) => {
-    try {
-      await fertilizantesService.remove(id);
-      await loadData();
-    } catch (err) {
-      console.error('Error eliminando fertilizante:', err);
-      throw err;
-    }
+    return toast.promise(
+      (async () => {
+        await fertilizantesService.remove(id);
+        await loadData();
+      })(),
+      {
+        loading: 'Eliminando...',
+        success: 'Fertilizante eliminado.',
+        error: 'Error al eliminar.',
+      }
+    );
   };
 
-  useEffect(() => {
-    loadData(); // cargar datos al montar
-  }, []);
+  useEffect(() => { loadData(); }, [loadData]);
 
   return {
     fertilizantes,

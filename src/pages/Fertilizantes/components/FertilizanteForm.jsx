@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react'; 
 import { FormPanel } from '../../../components/FormPanel';
 import { fertilizanteFormConfig } from '../fertilizantes.config';
 import useCatalogos from '../../../hooks/useCatalogos';
 
 export default function FertilizanteForm({ onSubmit, onCancel, initialValues }) {
+  // 1. Verificamos que los nombres coincidan con lo que devuelve useCatalogos
   const { tiposFertilizantes, estados, loading } = useCatalogos();
 
-  // =========================
-  // Inicializar valores del formulario
-  // =========================
   const [formValues, setFormValues] = useState({
     nombrefer: '',
     idtfer: '',
@@ -19,44 +17,48 @@ export default function FertilizanteForm({ onSubmit, onCancel, initialValues }) 
   useEffect(() => {
     if (initialValues) {
       setFormValues({
-        idfer: initialValues.idfer, // importante para edición
+        idfer: initialValues.idfer,
         nombrefer: initialValues.nombrefer || '',
-        idtfer: initialValues.idtfer || '',
+        idtfer: String(initialValues.idtfer),
         descripcionfer: initialValues.descripcionfer || '',
-        idest: initialValues.idest || '',
+        idest: String(initialValues.idest),
       });
     } else {
-      setFormValues({
-        nombrefer: '',
-        idtfer: '',
-        descripcionfer: '',
-        idest: '',
-      });
+      // ✅ RESET PARA CREACIÓN NUEVA
+      setFormValues({ nombrefer: '', idtfer: '', descripcionfer: '', idest: '', });
     }
   }, [initialValues]);
 
-  // =========================
-  // Config dinámica del formulario
-  // =========================
-  const dynamicConfig = fertilizanteFormConfig.map(field => {
-    if (field.key === 'idtfer') return { ...field, options: tiposFertilizantes };
-    if (field.key === 'idest') return { ...field, options: estados };
-    return field;
-  });
+  const dynamicConfig = useMemo(() => {
+    return fertilizanteFormConfig.map(field => {
+      if (field.key === 'idtfer') {
+        return { 
+          ...field, 
+          options: tiposFertilizantes.map(t => ({ 
+            value: String(t.idtfer), 
+            label: t.nombretfer 
+          })) 
+        };
+      }
+      if (field.key === 'idest') {
+        return { 
+          ...field, 
+          options: estados.map(e => ({ 
+            value: String(e.idest), 
+            label: e.nombreest 
+          })) 
+        };
+      }
+      return field;
+    });
+  }, [tiposFertilizantes, estados]);
 
-  // =========================
-  // Manejo de cambios
-  // =========================
   const handleChange = (key) => (value) =>
     setFormValues(prev => ({ ...prev, [key]: value }));
 
-  // =========================
-  // Submit con validación
-  // =========================
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validar campos requeridos
     if (!formValues.nombrefer || !formValues.idtfer || !formValues.idest) {
       alert('Por favor complete todos los campos obligatorios');
       return;
@@ -74,9 +76,6 @@ export default function FertilizanteForm({ onSubmit, onCancel, initialValues }) 
     onSubmit(dataToSend);
   };
 
-  // =========================
-  // Render
-  // =========================
   return (
     <FormPanel
       formConfig={dynamicConfig}
@@ -84,7 +83,7 @@ export default function FertilizanteForm({ onSubmit, onCancel, initialValues }) 
       onChange={handleChange}
       onSubmit={handleSubmit}
       onCancel={onCancel}
-      loading={loading} // opcional: si quieres deshabilitar mientras cargan catálogos
+      loading={loading} 
     />
   );
 }

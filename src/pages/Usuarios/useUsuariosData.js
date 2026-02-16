@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import usuariosService from '../../services/usuarios.service';
 import catalogosService from '../../services/catalogos.service';
+import { toast } from 'react-hot-toast'; 
 
 export default function useUsuariosData(filters = {}) {
   const [usuariosRaw, setUsuariosRaw] = useState([]);
   const [estados, setEstados] = useState([]);
-  const [roles, setRoles] = useState([]); // Guardamos los roles aquí
+  const [roles, setRoles] = useState([]); 
   const [loading, setLoading] = useState(true);
 
-  //  Extraemos 'rol' de los filtros
   const { estado = '', search = '', rol = '' } = filters;
 
   const loadData = useCallback(async () => {
@@ -40,7 +40,7 @@ export default function useUsuariosData(filters = {}) {
   const usuarios = useMemo(() => {
     return usuariosRaw.filter(u =>
       (!estado || u.estadoNombre === estado) &&
-      (!rol || u.rolNombre === rol) && // 
+      (!rol || u.rolNombre === rol) && 
       (!search || 
         u.nombreusu.toLowerCase().includes(search.toLowerCase()) ||
         u.emailusu.toLowerCase().includes(search.toLowerCase()))
@@ -49,9 +49,43 @@ export default function useUsuariosData(filters = {}) {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  // Función para Agregar con Notificación
+  const addUsuario = async (data) => {
+    return toast.promise(
+      (async () => {
+        await usuariosService.create(data);
+        await loadData(); // Recarga la tabla automáticamente
+      })(),
+      {
+        loading: 'Guardando nuevo usuario...',
+        success: '¡Usuario creado exitosamente!',
+        error: 'Error: No se pudo crear el usuario.',
+      }
+    );
+  };
+
+  // Función para Actualizar con Notificación
+  const updateUsuario = async (id, data) => {
+    return toast.promise(
+      (async () => {
+        await usuariosService.update(id, data);
+        await loadData(); // Recarga la tabla automáticamente
+      })(),
+      {
+        loading: 'Actualizando datos...',
+        success: '¡Cambios guardados correctamente!',
+        error: 'Error: No se pudieron guardar los cambios.',
+      }
+    );
+  };
+
   return { 
-    usuarios, estados, roles, loading, reload: loadData,
-    addUsuario: async (data) => { await usuariosService.create(data); await loadData(); },
-    updateUsuario: async (id, data) => { await usuariosService.update(id, data); await loadData(); }
+    usuarios, 
+    estados, 
+    roles, 
+    loading, 
+    reload: loadData,
+    addUsuario,   
+    updateUsuario  
   };
 }
