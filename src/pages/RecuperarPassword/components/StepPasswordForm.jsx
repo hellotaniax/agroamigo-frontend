@@ -11,18 +11,18 @@ export default function StepPasswordForm({
   handleVolver,
 }) {
   return (
-    <form onSubmit={handleRestablecerPassword} className="space-y-6">
+    <form onSubmit={handleRestablecerPassword} className="login-form">
 
       {/* Nueva contraseña */}
-      <div>
+      <div className="form-group mb-4">
         <label
           htmlFor="passwordNueva"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="form-label"
         >
           Nueva contraseña
         </label>
 
-        <div className="relative">
+        <div className="input-wrapper">
           <input
             id="passwordNueva"
             type={mostrarPassword ? 'text' : 'password'}
@@ -30,13 +30,15 @@ export default function StepPasswordForm({
             onChange={(e) => setPasswordNueva(e.target.value)}
             required
             placeholder="Mínimo 6 caracteres"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="form-control"
           />
-
+          
+          {/* Botón de ojo posicionado absolutamente */}
           <button
             type="button"
             onClick={() => setMostrarPassword(!mostrarPassword)}
-            className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+            className="toggle-password-btn"
+            style={{ position: 'absolute', right: 0, top: 0, height: '100%', borderLeft: 'none', borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
           >
             {mostrarPassword ? '🙈' : '👁️'}
           </button>
@@ -44,10 +46,10 @@ export default function StepPasswordForm({
       </div>
 
       {/* Confirmar contraseña */}
-      <div>
+      <div className="form-group mb-4">
         <label
           htmlFor="passwordConfirmar"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="form-label"
         >
           Confirmar contraseña
         </label>
@@ -59,16 +61,17 @@ export default function StepPasswordForm({
           onChange={(e) => setPasswordConfirmar(e.target.value)}
           required
           placeholder="Repite tu contraseña"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="form-control"
         />
       </div>
 
-      <div className="flex space-x-3">
+      {/* Botones de acción */}
+      <div className="recovery-actions-group">
         <button
           type="button"
           onClick={handleVolver}
           disabled={loading}
-          className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+          className="btn-back"
         >
           Volver
         </button>
@@ -76,7 +79,7 @@ export default function StepPasswordForm({
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 py-2 px-4 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium recuperar-btn"
+          className="login-btn w-100"
         >
           {loading ? 'Guardando...' : 'Restablecer'}
         </button>

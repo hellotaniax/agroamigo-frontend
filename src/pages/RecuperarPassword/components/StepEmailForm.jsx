@@ -5,9 +5,12 @@ export default function StepEmailForm({
   handleSolicitarCodigo,
 }) {
   return (
-    <form onSubmit={handleSolicitarCodigo} className="space-y-6">
+    <form onSubmit={handleSolicitarCodigo} className="login-form">
 
-      <div>
+      <div className="form-group">
+        <label htmlFor="email" className="form-label">
+           Correo Electrónico
+        </label>
         <input
           id="email"
           type="email"
@@ -16,14 +19,17 @@ export default function StepEmailForm({
           required
           placeholder="tu@email.com"
           className="form-control form-control-lg"
+          onInvalid={(e) => e.target.setCustomValidity('Por favor, completa este campo.')}
+          onInput={(e) => e.target.setCustomValidity('')}
         />
       </div>
 
-      <div className="text-center mt-2">
+      {/* El div text-center recibirá el margin-top: 64px del CSS */}
+      <div className="text-center">
         <button
           type="submit"
           disabled={loading}
-          className="inline-block py-2 px-4 rounded-lg transition-colors font-medium recuperar-btn"
+          className="login-btn w-100"
         >
           {loading ? 'Enviando...' : 'Enviar código'}
         </button>

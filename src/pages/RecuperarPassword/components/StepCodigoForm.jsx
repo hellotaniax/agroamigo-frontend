@@ -7,12 +7,13 @@ export default function StepCodigoForm({
   handleVolver,
 }) {
   return (
-    <form onSubmit={handleVerificarCodigo} className="space-y-6">
+    <form onSubmit={handleVerificarCodigo} className="login-form">
 
-      <div>
+      {/* Grupo centrado: Etiqueta arriba, input abajo */}
+      <div className="form-group-centered">
         <label
           htmlFor="codigo"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="form-label" 
         >
           Código de verificación
         </label>
@@ -27,26 +28,27 @@ export default function StepCodigoForm({
           required
           maxLength={6}
           placeholder="000000"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-widest"
+          className="form-control input-code-centered"
         />
 
-        <p className="mt-2 text-xs text-gray-500 text-center">
+        <p className="form-text text-center mt-3 text-muted">
           Ingresa el código de 6 dígitos enviado a tu correo
         </p>
       </div>
 
-      <div className="flex space-x-3">
+      {/* Grupo de botones separados */}
+      <div className="recovery-actions-group">
         <button
           type="button"
           onClick={handleVolver}
-          className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+          className="btn-back" 
         >
           Volver
         </button>
 
         <button
           type="submit"
-          className="flex-1 py-2 px-4 rounded-lg transition-colors font-medium recuperar-btn"
+          className="login-btn w-100" 
         >
           Continuar
         </button>
