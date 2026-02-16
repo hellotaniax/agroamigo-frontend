@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/Login/LoginPage';
-import ForgotPasswordPage from './pages/ForgotPassword/ForgotPasswordPage';
+import RecuperarPasswordPage from './pages/RecuperarPassword/RecuperarPasswordPage';
 import DashboardPage from './pages/Dashboard';
 import CultivosPage from './pages/Cultivos';
 import FertilizantesPage from './pages/Fertilizantes';
@@ -19,7 +19,7 @@ function App() {
     <Router>
       <Toaster {...toastConfig} />
 
-      <Routes> 
+      <Routes>
         {/* ===================== */}
         {/* RUTAS PÚBLICAS */}
         {/* ===================== */}
@@ -37,9 +37,10 @@ function App() {
           element={
             authService.isAuthenticated()
               ? <Navigate to="/dashboard" replace />
-              : <ForgotPasswordPage />
+              : <RecuperarPasswordPage />
           }
         />
+
 
         {/* ===================== */}
         {/* RUTAS PROTEGIDAS */}
@@ -55,7 +56,14 @@ function App() {
         </Route>
 
         {/* Redirección global */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="*"
+          element={
+            authService.isAuthenticated()
+              ? <Navigate to="/dashboard" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
 
       </Routes>
     </Router>
