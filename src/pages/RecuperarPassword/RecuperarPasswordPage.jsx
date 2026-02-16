@@ -17,62 +17,43 @@ export default function RecuperarPasswordPage() {
   return (
     <div className="login-page vh-100 d-flex justify-content-center align-items-center">
       <div className="login-container">
-        <div className="login-wrapper login-wrapper--wide">
+        <div className="login-wrapper login-wrapper--wide recovery-card">
 
           {/* Header */}
           <div className="text-center mb-4">
-            <h1 className="login-title">Recuperar contraseña</h1>
+            <h1 className="login-title recovery-title">Recuperar contraseña</h1>
           </div>
-
-          {/* Step Indicator */}
-          <div className="d-flex justify-content-center align-items-center mb-4 px-2 step-indicator">
+          <div className="step-indicator">
             {steps.map((label, index) => {
               const stepNumber = index + 1;
               const active = state.paso === stepNumber;
               const completed = state.paso > stepNumber;
 
               return (
-                <div key={label} className="text-center step-item">
-                  <div
-                    className={`rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center`}
-                    style={{
-                      width: 36,
-                      height: 36,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      backgroundColor: completed
-                        ? '#198754'
-                        : active
-                        ? '#0d6efd'
-                        : '#dee2e6',
-                      color: completed || active ? '#fff' : '#6c757d',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
+                <div 
+                  key={label} 
+                  className={`step-item ${active ? 'active' : ''} ${completed ? 'completed' : ''}`}
+                >
+                  <div className="step-circle">
                     {stepNumber}
                   </div>
-                  <small
-                    style={{
-                      color: active ? '#0d6efd' : '#6c757d',
-                      fontWeight: active ? 600 : 400
-                    }}
-                  >
+                  <div className="step-label">
                     {label}
-                  </small>
+                  </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Alertas */}
+          {/* Alertas de Error */}
           {state.error && (
-            <div className="alert alert-danger mb-3">
+            <div className="alert alert-danger mb-3 text-center">
               {state.error}
             </div>
           )}
 
-          {state.mensaje && (
-            <div className="alert alert-success mb-3">
+          {state.mensaje && state.paso === 2 && (
+            <div className="recovery-alert-info">
               {state.mensaje}
             </div>
           )}
@@ -84,9 +65,9 @@ export default function RecuperarPasswordPage() {
             {state.paso === 3 && <StepPasswordForm {...state} />}
           </div>
 
-          {/* Volver */}
-          <div className="text-center mt-4">
-            <Link to="/login" className="forgot-password-link">
+          {/* Volver al login (Footer) */}
+          <div className="mt-2">
+            <Link to="/login" className="back-to-login-link">
               ← Volver al inicio de sesión
             </Link>
           </div>

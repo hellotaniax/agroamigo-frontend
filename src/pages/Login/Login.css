@@ -872,3 +872,53 @@
   letter-spacing: 1px;      
   font-size: 13px;           
 }
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.btn-password-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 46px;            
+  background: none;        
+  border: none;           
+  cursor: pointer;
+  color: #9ca3af;          
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  z-index: 10;
+}
+
+.btn-password-toggle:hover {
+  color: #4b5563;          
+}
+
+.btn-password-toggle:focus {
+  outline: none;
+}
+
+.input-with-icon {
+  padding-right: 48px !important;
+}
+
+.login-page .form-control,
+.login-page input[type="password"],
+.login-page input[type="text"],
+.login-page input[type="email"] {
+    font-size: 15px !important;      
+    font-weight: 400 !important;    
+    letter-spacing: normal !important;
+    line-height: 1.5 !important;
+}
+
+.login-page input:-webkit-autofill::first-line {
+    font-size: 15px !important;
+    font-family: inherit !important;
+}
