@@ -1,10 +1,10 @@
 import FilterPanel from '../../../components/FilterPanel';
-import { recomendacionesFiltersConfig } from '../recomendaciones.config';
 
-export default function RecomendacionesFilter({ onFiltersChange }) {
+export default function RecomendacionesFilter({ config, onFiltersChange }) {
   return (
     <FilterPanel
-      filtersConfig={recomendacionesFiltersConfig}
+      // ✅ Usamos la config dinámica que ya tiene los estados y prioridades de la DB
+      filtersConfig={config} 
       onFiltersChange={onFiltersChange}
     />
   );

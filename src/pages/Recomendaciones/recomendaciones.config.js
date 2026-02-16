@@ -1,22 +1,46 @@
 import { BiSearch } from 'react-icons/bi';
 
+/**
+ * ===============================
+ * Configuración del formulario
+ * ===============================
+ */
 export const recomendacionFormConfig = [
-  { key: 'titulorec', label: 'Título', type: 'text', required: true, placeholder: 'Ingrese el título de la recomendación' },
-  { key: 'descripcionrec', label: 'Descripción', type: 'text', required: true, placeholder: 'Ingrese la descripción de la recomendación' },
-  { key: 'idest', label: 'Estado', type: 'select', required: true, options: [
-    { value: '', label: 'Seleccione estado...' },
-    { value: '1', label: 'Activo' },
-    { value: '2', label: 'Borrador' },
-    { value: '3', label: 'Archivado' },
-  ] },
-  { key: 'idpri', label: 'Prioridad', type: 'select', required: true, options: [
-    { value: '', label: 'Seleccione prioridad...' },
-    { value: '1', label: 'Alta' },
-    { value: '2', label: 'Media' },
-    { value: '3', label: 'Baja' },
-  ] },
+  {
+    key: 'titulorec',
+    label: 'Título',
+    type: 'text',
+    required: true,
+    placeholder: 'Ingrese el título de la recomendación',
+  },
+  {
+    key: 'descripcionrec',
+    label: 'Descripción',
+    type: 'text',
+    required: true,
+    placeholder: 'Ingrese la descripción detallada',
+  },
+  {
+    key: 'idest',
+    label: 'Estado',
+    type: 'select',
+    required: true,
+    options: [], // ← Se llena dinámicamente desde catalogosService.getEstados()
+  },
+  {
+    key: 'idpri',
+    label: 'Prioridad',
+    type: 'select',
+    required: true,
+    options: [], // ← Se llena dinámicamente desde catalogosService.getPrioridades()
+  },
 ];
 
+/**
+ * ===============================
+ * Configuración de filtros
+ * ===============================
+ */
 export const recomendacionesFiltersConfig = [
   {
     key: 'search',
@@ -26,39 +50,37 @@ export const recomendacionesFiltersConfig = [
     icon: <BiSearch />,
   },
   {
-    key: 'state',
+    key: 'estado',
     label: 'Estado',
     type: 'select',
-    options: [
-      { value: '', label: 'Todos' },
-      { value: 'Activo', label: 'Activo' },
-      { value: 'Borrador', label: 'Borrador' },
-      { value: 'Archivado', label: 'Archivado' },
-    ],
+    options: [], // ← Se llena dinámicamente con los nombres de estados
   },
   {
     key: 'priority',
     label: 'Prioridad',
     type: 'select',
-    options: [
-      { value: '', label: 'Todas' },
-      { value: 'Alta', label: 'Alta' },
-      { value: 'Media', label: 'Media' },
-      { value: 'Baja', label: 'Baja' },
-    ],
+    options: [], // ← Se llena dinámicamente con los nombres de prioridades
   },
 ];
 
+/**
+ * ===============================
+ * Columnas de la tabla
+ * ===============================
+ */
 export const recomendacionesColumns = [
   { header: 'ID', accessor: 'idrec' },
   { header: 'Título', accessor: 'titulorec' },
   { header: 'Descripción', accessor: 'descripcionrec' },
-  { header: 'Prioridad', accessor: 'prioridadNombre' },
-  { header: 'Estado', accessor: 'estadoNombre' },
+  { header: 'Prioridad', accessor: 'prioridadNombre' }, // Nombre enriquecido por el hook
+  { header: 'Estado', accessor: 'estadoNombre' },       // Nombre enriquecido por el hook
 ];
 
+/**
+ * Clases para badges de estado
+ */
 export const estadoBadgeClass = {
   Activo: 'activo',
   Borrador: 'borrador',
-  Archivado: 'archivado',
+  Inactivo: 'inactivo',
 };

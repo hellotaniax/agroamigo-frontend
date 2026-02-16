@@ -1,77 +1,76 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import recomendacionesService from '../../services/recomendaciones.service'; 
+import catalogosService from '../../services/catalogos.service';
 
-export default function useRecomendacionesData(options = {}) {
-  const [recomendaciones, setRecomendaciones] = useState([]);
+export default function useRecomendacionesData(filters = {}) {
+  const [recomendacionesRaw, setRecomendacionesRaw] = useState([]);
+  // NUEVOS ESTADOS: Necesarios para que la página genere los config
+  const [estados, setEstados] = useState([]); 
+  const [prioridades, setPrioridades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { estado = '', search = '', priority = '' } = options;
 
-  const filterData = useCallback(
-    (data) => data.filter(r =>
-      (!estado || r.estadoNombre === estado) &&
-      (!priority || r.prioridadNombre === priority) &&
-      (!search || r.titulorec.toLowerCase().includes(search.toLowerCase()) ||
-       r.descripcionrec.toLowerCase().includes(search.toLowerCase()))
-    ),
-    [estado, search, priority]
-  );
+  const { estado = '', priority = '', search = '' } = filters;
 
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchData = async () => {
+  const loadData = useCallback(async () => {
+    try {
       setLoading(true);
       setError(null);
-      try {
-        const data = [
-          { idrec: 'REC-01', titulorec: 'Riego matutino', descripcionrec: 'Regar temprano en la mañana para mejor absorción.', idest: 1, estadoNombre: 'Activo', idpri: 2, prioridadNombre: 'Media' },
-          { idrec: 'REC-02', titulorec: 'Fertilización NPK', descripcionrec: 'Aplicar fertilizante NPK cada 30 días.', idest: 1, estadoNombre: 'Activo', idpri: 1, prioridadNombre: 'Alta' },
-          { idrec: 'REC-03', titulorec: 'Inspección de plagas', descripcionrec: 'Inspeccionar hojas semanalmente por signos de plagas.', idest: 2, estadoNombre: 'Borrador', idpri: 3, prioridadNombre: 'Baja' },
-        ];
 
-        if (mounted) {
-          setRecomendaciones(filterData(data));
-          setLoading(false);
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(err);
-          setLoading(false);
-        }
-      }
-    };
+      const [recData, estData, priData] = await Promise.all([
+        recomendacionesService.getAll(),
+        catalogosService.getEstados(),
+        catalogosService.getPrioridades(),
+      ]);
 
-    fetchData();
-    return () => { mounted = false; };
-  }, [filterData]);
+      // Guardamos los catálogos crudos para los selectores
+      setEstados(estData);
+      setPrioridades(priData);
 
-  const estadosMap = {
-    '1': 'Activo',
-    '2': 'Borrador',
-    '3': 'Archivado',
+      const enriched = recData.map(r => ({
+        ...r,
+        estadoNombre: estData.find(e => e.idest === r.idest)?.nombreest || '—',
+        prioridadNombre: priData.find(p => p.idpri === r.idpri)?.nombrepri || '—',
+      }));
+
+      setRecomendacionesRaw(enriched);
+    } catch (err) {
+      console.error('Error cargando recomendaciones:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const recomendaciones = useMemo(() => {
+    return recomendacionesRaw.filter(r =>
+      (!estado || r.estadoNombre === estado) &&
+      (!priority || r.prioridadNombre === priority) &&
+      (!search || 
+        r.titulorec.toLowerCase().includes(search.toLowerCase()) || 
+        r.descripcionrec.toLowerCase().includes(search.toLowerCase()))
+    );
+  }, [recomendacionesRaw, estado, priority, search]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  return {
+    recomendaciones,
+    recomendacionesRaw,
+    estados,      
+    prioridades,  
+    loading,
+    error,
+    reload: loadData,
+    addRecomendacion: async (data) => {
+      await recomendacionesService.create(data);
+      await loadData();
+    },
+    deleteRecomendacion: async (id) => {
+      await recomendacionesService.remove(id);
+      await loadData();
+    }
   };
-
-  const prioridadesMap = {
-    '1': 'Alta',
-    '2': 'Media',
-    '3': 'Baja',
-  };
-
-  const addRecomendacion = (data) => {
-    const nextIdNumber = recomendaciones.length + 1;
-    const newId = `REC-${String(nextIdNumber).padStart(2, '0')}`;
-    const newRec = {
-      idrec: newId,
-      titulorec: data.titulorec || '',
-      descripcionrec: data.descripcionrec || '',
-      idest: data.idest || '',
-      estadoNombre: estadosMap[String(data.idest)] || data.estadoNombre || '',
-      idpri: data.idpri || '',
-      prioridadNombre: prioridadesMap[String(data.idpri)] || data.prioridadNombre || '',
-    };
-
-    setRecomendaciones(prev => [newRec, ...prev]);
-  };
-
-  return { recomendaciones, loading, error, addRecomendacion };
 }

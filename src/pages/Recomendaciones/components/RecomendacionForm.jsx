@@ -1,53 +1,44 @@
+// src/pages/Recomendaciones/components/RecomendacionForm.jsx
 import React, { useState, useEffect } from 'react';
 import { FormPanel } from '../../../components/FormPanel';
-import { recomendacionFormConfig } from '../recomendaciones.config';
 
-const ESTADOS_MAP_INVERSE = {
-  'Activo': '1',
-  'Borrador': '2',
-  'Archivado': '3',
-};
-
-const PRIORIDADES_MAP_INVERSE = {
-  'Alta': '1',
-  'Media': '2',
-  'Baja': '3',
-};
-
-const INITIAL_EMPTY_STATE = Object.fromEntries(
-  recomendacionFormConfig.map(f => [f.key, ''])
-);
-
-export default function RecomendacionForm({ onSubmit, onCancel, initialValues }) {
-  const [formValues, setFormValues] = useState(INITIAL_EMPTY_STATE);
+export default function RecomendacionForm({ onSubmit, onCancel, initialValues, config }) {
+  const [formValues, setFormValues] = useState({});
 
   useEffect(() => {
     if (initialValues) {
-      const processed = {
-        ...initialValues,
-        idest: initialValues.idest || ESTADOS_MAP_INVERSE[initialValues.estadoNombre] || '',
-        idpri: initialValues.idpri || PRIORIDADES_MAP_INVERSE[initialValues.prioridadNombre] || '',
-      };
-      setFormValues(processed);
+      // ✅ IMPORTANTE: Solo cargamos los campos que la API acepta para el body
+      setFormValues({
+        titulorec: initialValues.titulorec || '',
+        descripcionrec: initialValues.descripcionrec || '',
+        idest: initialValues.idest || '', 
+        idpri: initialValues.idpri || ''
+      });
     } else {
-      setFormValues(INITIAL_EMPTY_STATE);
+      const emptyState = Object.fromEntries(config.map(f => [f.key, '']));
+      setFormValues(emptyState);
     }
-  }, [initialValues]);
-
-  const handleChange = (key) => (value) =>
-    setFormValues(prev => ({ ...prev, [key]: value }));
+  }, [initialValues, config]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formValues);
-    if (!initialValues) setFormValues(INITIAL_EMPTY_STATE);
+    if (e) e.preventDefault();
+    
+    // ✅ Convertimos a números para cumplir con el esquema de la DB
+    const dataToSend = {
+      titulorec: formValues.titulorec,
+      descripcionrec: formValues.descripcionrec,
+      idest: parseInt(formValues.idest),
+      idpri: parseInt(formValues.idpri)
+    };
+    
+    onSubmit(dataToSend);
   };
 
   return (
     <FormPanel
-      formConfig={recomendacionFormConfig}
+      formConfig={config}
       values={formValues}
-      onChange={handleChange}
+      onChange={(key) => (value) => setFormValues(prev => ({ ...prev, [key]: value }))}
       onSubmit={handleSubmit}
       onCancel={onCancel}
     />
