@@ -1,16 +1,22 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom'; // 1. Cambiamos Link por NavLink
 
-export default function SidebarItem({ icon, label, active, divider, to }) {
+export default function SidebarItem({ icon, label, divider, to }) {
   return (
     <li className={`nav-item ${divider ? 'divider' : ''}`}>
-      <Link
+      {}
+      <NavLink
         to={to || '#'}
-        className={`nav-link ${active ? 'active' : ''}`}
+
+        className={({ isActive }) => 
+          `nav-link ${isActive ? 'active' : ''}`
+        }
         data-tooltip={label}
+    
+        end={to === '/' || to === '/dashboard'} 
       >
         <i className={`bi ${icon}`}></i>
         <span>{label}</span>
-      </Link>
+      </NavLink>
     </li>
   );
 }

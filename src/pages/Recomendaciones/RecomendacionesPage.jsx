@@ -4,7 +4,7 @@ import RecomendacionesTable from './components/RecomendacionesTable';
 import RecomendacionesFilter from './components/RecomendacionesFilter';
 import RecomendacionForm from './components/RecomendacionForm';
 import { AddButton } from '../../components/Buttons';
-import { useState } from 'react';
+import { useState, useMemo } from 'react'; 
 
 // Importamos las constantes de configuración estática
 import { 
@@ -13,12 +13,11 @@ import {
 } from './recomendaciones.config';
 
 export default function RecomendacionesPage() {
-  // ✅ Extraemos todas las funciones necesarias, incluyendo updateRecomendacion
   const { 
     recomendaciones, 
     loading, 
     addRecomendacion, 
-    updateRecomendacion, // Para guardar cambios en la edición
+    updateRecomendacion, 
     deleteRecomendacion, 
     reload, 
     estados, 
@@ -30,46 +29,60 @@ export default function RecomendacionesPage() {
   const [formError, setFormError] = useState(null);
 
   /**
-   * 🔹 Inyección dinámica de opciones (Mapeo)
-   * Transformamos los catálogos de la DB en opciones para los selects
+   * ✅ CORRECCIÓN 1: Usar useMemo para la configuración del Formulario
+   * Esto evita que se recargue infinitamente al editar o abrir el modal.
    */
-  const dynamicFormConfig = recomendacionFormConfig.map(field => {
-    if (field.key === 'idest') {
-      return { ...field, options: [
-        { value: '', label: 'Seleccione estado...' },
-        ...estados.map(e => ({ value: String(e.idest), label: e.nombreest }))
-      ]};
-    }
-    if (field.key === 'idpri') {
-      return { ...field, options: [
-        { value: '', label: 'Seleccione prioridad...' },
-        ...prioridades.map(p => ({ value: String(p.idpri), label: p.nombrepri }))
-      ]};
-    }
-    return field;
-  });
+  const dynamicFormConfig = useMemo(() => {
+    return recomendacionFormConfig.map(field => {
+      if (field.key === 'idest') {
+        return { ...field, options: [
+          { value: '', label: 'Seleccione estado...' },
+          ...estados.map(e => ({ value: String(e.idest), label: e.nombreest }))
+        ]};
+      }
+      if (field.key === 'idpri') {
+        return { ...field, options: [
+          { value: '', label: 'Seleccione prioridad...' },
+          ...prioridades.map(p => ({ value: String(p.idpri), label: p.nombrepri }))
+        ]};
+      }
+      return field;
+    });
+  }, [estados, prioridades]); // Solo se recalcula si cambian los catálogos
 
-  const dynamicFiltersConfig = recomendacionesFiltersConfig.map(filter => {
-    if (filter.key === 'estado') {
-      return { ...filter, options: [
-        ...estados.map(e => ({ value: e.nombreest, label: e.nombreest }))
-      ]};
-    }
-    if (filter.key === 'priority') {
-      return { ...filter, options: [
-        ...prioridades.map(p => ({ value: p.nombrepri, label: p.nombrepri }))
-      ]};
-    }
-    return filter;
-  });
+  /**
+   * ✅ CORRECCIÓN 2: Usar useMemo para la configuración de Filtros
+   */
+  const dynamicFiltersConfig = useMemo(() => {
+    return recomendacionesFiltersConfig.map(filter => {
+      if (filter.key === 'estado') {
+        return { ...filter, options: [
+          { value: '', label: 'Todos' },
+          ...estados.map(e => ({ value: e.nombreest, label: e.nombreest }))
+        ]};
+      }
+      if (filter.key === 'priority') {
+        return { ...filter, options: [
+          { value: '', label: 'Todas' },
+          ...prioridades.map(p => ({ value: p.nombrepri, label: p.nombrepri }))
+        ]};
+      }
+      return filter;
+    });
+  }, [estados, prioridades]);
 
-  // Filtrado en memoria
-  const filteredRecomendaciones = recomendaciones.filter(r => 
-    (r.titulorec.toLowerCase().includes(filters.search.toLowerCase()) ||
-     r.descripcionrec.toLowerCase().includes(filters.search.toLowerCase())) &&
-    (filters.estado === '' || r.estadoNombre === filters.estado) &&
-    (filters.priority === '' || r.prioridadNombre === filters.priority)
-  );
+  /**
+   * ✅ CORRECCIÓN 3: Optimizar el filtrado de datos
+   * Evita cálculos innecesarios en cada pulsación de tecla si hay muchos datos.
+   */
+  const filteredRecomendaciones = useMemo(() => {
+    return recomendaciones.filter(r => 
+      (r.titulorec.toLowerCase().includes(filters.search.toLowerCase()) ||
+       r.descripcionrec.toLowerCase().includes(filters.search.toLowerCase())) &&
+      (filters.estado === '' || r.estadoNombre === filters.estado) &&
+      (filters.priority === '' || r.prioridadNombre === filters.priority)
+    );
+  }, [recomendaciones, filters]);
 
   // Callback para agregar recomendación
   const handleAdd = async (data) => {
@@ -83,6 +96,19 @@ export default function RecomendacionesPage() {
     }
   };
 
+  // Loader preventivo si no hay datos
+  if (loading && recomendaciones.length === 0) {
+    return (
+      <AdminLayout breadcrumbs={[{ label: 'Recomendaciones' }]}>
+        <div className="d-flex justify-content-center align-items-center h-100">
+          <div className="spinner-border text-success" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout breadcrumbs={[{ label: 'Recomendaciones' }]}>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -90,7 +116,6 @@ export default function RecomendacionesPage() {
         <AddButton onClick={() => setShowForm(true)}>Agregar recomendación</AddButton>
       </div>
 
-      {/* Formulario de Creación */}
       {showForm && (
         <div className="mb-4">
           {formError && (
@@ -110,17 +135,17 @@ export default function RecomendacionesPage() {
       )}
 
       <RecomendacionesFilter 
-      config={dynamicFiltersConfig} 
-      onFiltersChange={setFilters} 
+        config={dynamicFiltersConfig} 
+        onFiltersChange={setFilters} 
       />
 
       <RecomendacionesTable 
         data={filteredRecomendaciones} 
         loading={loading}
-        onDelete={deleteRecomendacion} // Función para eliminar
-        onUpdate={updateRecomendacion} // ✅ Función para guardar ediciones
-        onDataChange={reload}          // Refresco tras acciones
-        configForm={dynamicFormConfig} // ✅ Configuración para el modal de edición
+        onDelete={deleteRecomendacion} 
+        onUpdate={updateRecomendacion} 
+        onDataChange={reload} 
+        configForm={dynamicFormConfig} 
       />
     </AdminLayout>
   );
