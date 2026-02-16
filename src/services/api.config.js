@@ -79,12 +79,6 @@ apiApp.interceptors.response.use(
 apiApp.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-
-    // 🔍 DEBUG - BORRALO DESPUÉS
-    console.log('🔑 Token:', token);
-    console.log('📍 URL completa:', config.baseURL + config.url);
-    console.log('📤 Headers:', config.headers);
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
