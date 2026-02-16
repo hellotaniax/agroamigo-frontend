@@ -1,3 +1,4 @@
+// src/pages/Fertilizantes/FertilizantesPage.jsx
 import AdminLayout from '../../layouts/AdminLayout';
 import useFertilizantesData from './useFertilizantesData';
 import FertilizantesTable from './components/FertilizantesTable';
@@ -7,43 +8,66 @@ import { AddButton } from '../../components/Buttons';
 import { useState } from 'react';
 
 export default function FertilizantesPage() {
-  const { fertilizantes, loading, addFertilizante } = useFertilizantesData();
+  const { fertilizantes, loading, addFertilizante, reload } = useFertilizantesData();
   const [filters, setFilters] = useState({ search: '', type: '', state: '' });
   const [showForm, setShowForm] = useState(false);
+  const [formError, setFormError] = useState(null);
 
-  // Filtrado local de fertilizantes según filtros activos
+  // Filtrado de fertilizantes según filtros activos
   const filteredFertilizantes = fertilizantes.filter(f =>
     f.nombrefer.toLowerCase().includes(filters.search.toLowerCase()) &&
-    (filters.type === '' || f.tipoNombre === filters.type) &&
-    (filters.state === '' || f.estadoNombre === filters.state)
+    (filters.type === '' || f.idtfer === parseInt(filters.type)) &&
+    (filters.state === '' || f.idest === parseInt(filters.state))
   );
 
-  const handleAdd = (data) => {
-    addFertilizante(data);
-    setShowForm(false);
+  // Callback para agregar fertilizante
+  const handleAdd = async (data) => {
+    try {
+      setFormError(null);
+      await addFertilizante(data);
+      setShowForm(false);
+      reload(); // recargar tabla después de agregar
+    } catch (error) {
+      setFormError('Error al guardar el fertilizante. Inténtalo de nuevo.');
+      console.error(error);
+    }
   };
 
   return (
     <AdminLayout breadcrumbs={[{ label: 'Fertilizantes' }]}>
-      {/* Header con título y botón */}
+      {/* Header con título y botón de agregar */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Lista de Fertilizantes</h4>
         <AddButton onClick={() => setShowForm(true)}>Agregar fertilizante</AddButton>
       </div>
 
-      {/* Formulario para agregar fertilizante */}
+      {/* Formulario modal / panel para agregar */}
       {showForm && (
-        <FertilizanteForm
-          onSubmit={handleAdd}
-          onCancel={() => setShowForm(false)}
-        />
+        <div>
+          {formError && (
+            <div className="alert alert-danger" role="alert">
+              {formError}
+            </div>
+          )}
+          <FertilizanteForm
+            onSubmit={handleAdd}
+            onCancel={() => {
+              setShowForm(false);
+              setFormError(null);
+            }}
+          />
+        </div>
       )}
 
-      {/* Filtros */}
+      {/* Panel de filtros */}
       <FertilizantesFilter onFiltersChange={setFilters} />
 
-      {/* Tabla de fertilizantes */}
-      <FertilizantesTable data={filteredFertilizantes} loading={loading} />
+      {/* Tabla de fertilizantes filtrados */}
+      <FertilizantesTable
+        data={filteredFertilizantes}
+        loading={loading}
+        onDataChange={reload} // recargar tabla si se edita
+      />
     </AdminLayout>
   );
 }

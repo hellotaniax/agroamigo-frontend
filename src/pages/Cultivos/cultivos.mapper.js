@@ -18,7 +18,7 @@ export const mapCultivosFromApi = (data = []) =>
   data.map(mapCultivoFromApi);
 
 /**
- * ✅ Mapper: Frontend → API
+ * Mapper: Frontend → API
  * Se usa al crear o actualizar
  */
 export const mapCultivoToApi = (formData) => ({

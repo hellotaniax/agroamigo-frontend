@@ -1,19 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import TableCard from '../../../components/TableCard';
-import { fertilizantesColumns, estadoBadgeClass } from '../fertilizantes.config';
-import { ButtonPrimary} from '../../../components/Buttons';
-import { BiEdit } from 'react-icons/bi';
+import { fertilizantesColumns } from '../fertilizantes.config';
+import { getBadgeClass } from '../../../utils/badgeStates';
 import FertilizanteForm from './FertilizanteForm';
 import Modal from '../../../components/Modal';
+import fertilizantesService from '../../../services/fertilizantes.service';
+import { BiEdit } from 'react-icons/bi';
+import { ButtonPrimary } from '../../../components/Buttons';
 
-export default function FertilizantesTable({ data, loading, showActions = true }) {
-  const [editingFertilizante, setEditingFertilizante] = useState(null);
-  const [tableData, setTableData] = useState(data);
-
-  useEffect(() => setTableData(data), [data]);
+export default function FertilizantesTable({ data, loading, onDataChange, showActions = true }) {
+  const [editingFert, setEditingFert] = useState(null);
 
   const renderEstado = (row) => (
-    <span className={`badge ${estadoBadgeClass[row.estadoNombre] || ''}`}>
+    <span className={`badge ${getBadgeClass(row.estadoNombre)}`}>
       {row.estadoNombre}
     </span>
   );
@@ -26,43 +25,24 @@ export default function FertilizantesTable({ data, loading, showActions = true }
   const rowActions = showActions
     ? (row) => (
         <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary icon={BiEdit} onClick={() => setEditingFertilizante(row)}>
+          <ButtonPrimary icon={BiEdit} onClick={() => setEditingFert(row)}>
             Editar
           </ButtonPrimary>
         </div>
       )
     : null;
 
-  const handleFormClose = () => setEditingFertilizante(null);
+  const handleFormClose = () => setEditingFert(null);
 
-  // Mapeos para convertir IDs a nombres
-  const tiposMap = {
-    '1': 'Nitrogenado',
-    '2': 'Fosfatado',
-    '3': 'Potásico',
-    '4': 'Complejo NPK',
-    '5': 'Micronutrientes',
-    '99': 'Otro',
-  };
-
-  const estadosMap = {
-    '1': 'Activo',
-    '2': 'Archivado',
-    '3': 'Borrador',
-  };
-
-  const handleFormSubmit = (updatedFertilizante) => {
-    // Convertir IDs a nombres antes de guardar
-    const fertilizanteConNombres = {
-      ...updatedFertilizante,
-      tipoNombre: tiposMap[String(updatedFertilizante.idtfer)] || updatedFertilizante.tipoNombre,
-      estadoNombre: estadosMap[String(updatedFertilizante.idest)] || updatedFertilizante.estadoNombre,
-    };
-    
-    setTableData(prev =>
-      prev.map(f => (f.idfer === fertilizanteConNombres.idfer ? fertilizanteConNombres : f))
-    );
-    setEditingFertilizante(null);
+  const handleFormSubmit = async (updatedFert) => {
+    try {
+      await fertilizantesService.update(updatedFert.idfer, updatedFert);
+      setEditingFert(null);
+      if (onDataChange) onDataChange(); // ✅ Dispara reload en el page
+    } catch (error) {
+      console.error('Error actualizando fertilizante:', error);
+      alert('Error al actualizar el fertilizante');
+    }
   };
 
   return (
@@ -70,17 +50,17 @@ export default function FertilizantesTable({ data, loading, showActions = true }
       <TableCard
         title="Fertilizantes registrados"
         columns={columns}
-        data={tableData}
+        data={data}
         loading={loading}
         rowActions={rowActions}
       />
 
-      {editingFertilizante && (
+      {editingFert && (
         <Modal onClose={handleFormClose}>
           <FertilizanteForm
-            initialValues={editingFertilizante}
-            onCancel={handleFormClose}
+            initialValues={editingFert}
             onSubmit={handleFormSubmit}
+            onCancel={handleFormClose}
           />
         </Modal>
       )}

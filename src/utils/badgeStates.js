@@ -2,7 +2,7 @@
 export const badgeStates = {
   Activo: 'activo',
   Borrador: 'borrador',
-  Archivado: 'archivado',
+  Inactivo: 'inactivo',
 };
 
 // Función para obtener la clase CSS según el estado
