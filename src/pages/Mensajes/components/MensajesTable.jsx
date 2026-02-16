@@ -1,31 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import TableCard from '../../../components/TableCard';
-import { mensajesColumns, estadoBadgeClass } from '../mensajes.config';
-import { ButtonPrimary } from '../../../components/Buttons';
-import { BiEdit } from 'react-icons/bi';
+import { mensajesColumns } from '../mensajes.config';
+import { ButtonPrimary } from '../../../components/Buttons'; 
+import { BiEdit } from 'react-icons/bi'; 
 import MensajeForm from './MensajeForm';
 import Modal from '../../../components/Modal';
+import mensajesService from '../../../services/mensajes.service';
+import { getBadgeClass } from '../../../utils/badgeStates';
 
-export default function MensajesTable({ data, loading, showActions = true }) {
+export default function MensajesTable({ data, loading, onDataChange, configForm, showActions = true }) {
   const [editingMensaje, setEditingMensaje] = useState(null);
-  const [tableData, setTableData] = useState(data);
 
-  useEffect(() => setTableData(data), [data]);
-
-  // Renderiza estado con badge
+  // =========================
+  // Renderizado de badges
+  // =========================
   const renderEstado = (row) => (
-    <span className={`badge ${estadoBadgeClass[row.estadoNombre] || ''}`}>
+    <span className={`badge ${getBadgeClass(row.estadoNombre)}`}>
       {row.estadoNombre}
     </span>
   );
 
-  // Mapear columnas para usar renderers
+  // =========================
+  // Columnas
+  // =========================
   const columns = mensajesColumns.map(col => {
     if (col.accessor === 'estadoNombre') return { ...col, render: renderEstado };
     return col;
   });
 
+  // =========================
   // Acciones por fila
+  // =========================
   const rowActions = showActions
     ? (row) => (
         <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
@@ -36,27 +41,29 @@ export default function MensajesTable({ data, loading, showActions = true }) {
       )
     : null;
 
+  // =========================
+  // Cerrar modal
+  // =========================
   const handleFormClose = () => setEditingMensaje(null);
 
-  // Mapeos para convertir IDs a nombres
-  const estadosMap = {
-    '1': 'Activo',
-    '2': 'Borrador',
-    '3': 'Archivado',
-  };
+  // =========================
+  // Submit del formulario (edición)
+  // =========================
+  const handleFormSubmit = async (updatedMensaje) => {
+    try {
+      if (editingMensaje) {
+        // Llamar al servicio directamente
+        await mensajesService.update(editingMensaje.idmen, updatedMensaje);
+      }
 
-  const handleFormSubmit = (updatedMensaje) => {
-    // Convertir ID a nombre antes de guardar
-    const mensajeConNombre = {
-      ...updatedMensaje,
-      estadoNombre: estadosMap[String(updatedMensaje.idest)] || updatedMensaje.estadoNombre,
-    };
+      setEditingMensaje(null);
 
-    // Actualiza tabla localmente
-    setTableData(prev =>
-      prev.map(m => (m.idmen === mensajeConNombre.idmen ? mensajeConNombre : m))
-    );
-    setEditingMensaje(null);
+      // Recargar datos en el Page
+      if (onDataChange) await onDataChange();
+    } catch (error) {
+      console.error('Error actualizando mensaje:', error);
+      alert('No se pudo actualizar el mensaje. Verifique los datos.');
+    }
   };
 
   return (
@@ -64,7 +71,7 @@ export default function MensajesTable({ data, loading, showActions = true }) {
       <TableCard
         title="Mensajes registrados"
         columns={columns}
-        data={tableData}
+        data={data}
         loading={loading}
         rowActions={rowActions}
       />
@@ -73,6 +80,7 @@ export default function MensajesTable({ data, loading, showActions = true }) {
         <Modal onClose={handleFormClose}>
           <MensajeForm
             initialValues={editingMensaje}
+            config={configForm}
             onCancel={handleFormClose}
             onSubmit={handleFormSubmit}
           />

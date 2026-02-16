@@ -20,8 +20,8 @@ export default function CultivosFilter({ onFiltersChange }) {
       if (filter.key === 'state') {
         return {
           ...filter,
-          options: estados, // ✅ Ya vienen en formato {value, label}
-          placeholder: 'Todos los estados', // ✅ Placeholder para la opción vacía
+          options: estados, 
+          placeholder: 'Todos los estados', 
         };
       }
       return filter;
