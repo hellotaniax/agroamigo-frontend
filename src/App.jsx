@@ -3,6 +3,7 @@ import LoginPage from './pages/Login/LoginPage';
 import DashboardPage from './pages/Dashboard';
 import CultivosPage from './pages/Cultivos';
 import FertilizantesPage from './pages/Fertilizantes';
+import AplicacionesFertilizantesPage from './pages/AplicacionesFertilizantes';
 import MensajesPage from './pages/Mensajes';
 import RecomendacionesPage from './pages/Recomendaciones';
 import UsuariosPage from './pages/Usuarios';
@@ -34,6 +35,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/cultivos" element={<CultivosPage />} />
           <Route path="/fertilizantes" element={<FertilizantesPage />} />
+          <Route path="/aplicaciones-fertilizantes" element={<AplicacionesFertilizantesPage />} />
           <Route path="/mensajes" element={<MensajesPage />} />
           <Route path="/recomendaciones" element={<RecomendacionesPage />} />
           <Route path="/usuarios" element={<UsuariosPage />} />
