@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/Login/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPassword/ForgotPasswordPage';
 import DashboardPage from './pages/Dashboard';
 import CultivosPage from './pages/Cultivos';
 import FertilizantesPage from './pages/Fertilizantes';
@@ -17,7 +18,7 @@ function App() {
       <Routes>
 
         {/* ===================== */}
-        {/* LOGIN CON REDIRECCIÓN SI YA ESTÁ AUTENTICADO */}
+        {/* RUTAS PÚBLICAS */}
         {/* ===================== */}
         <Route
           path="/login"
@@ -25,6 +26,15 @@ function App() {
             authService.isAuthenticated()
               ? <Navigate to="/dashboard" replace />
               : <LoginPage />
+          }
+        />
+
+        <Route
+          path="/forgot-password"
+          element={
+            authService.isAuthenticated()
+              ? <Navigate to="/dashboard" replace />
+              : <ForgotPasswordPage />
           }
         />
 

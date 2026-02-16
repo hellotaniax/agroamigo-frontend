@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import logo from '../../assets/img/logoagroamigo.png';
 import './Login.css';
 import useLogin from './useLogin';
@@ -40,6 +41,13 @@ export default function LoginPage() {
             clearError={clearError}
             isFormValid={isFormValid}
           />
+
+          {/* Enlace de recuperación de contraseña */}
+          <div className="text-center mt-3">
+            <Link to="/forgot-password" className="text-muted forgot-password-link">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
         </div>
       </div>
     </div>
