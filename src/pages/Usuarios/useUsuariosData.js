@@ -1,71 +1,55 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import usuariosService from '../../services/usuarios.service';
+import catalogosService from '../../services/catalogos.service';
 
-export default function useUsuariosData(options = {}) {
-  const [usuarios, setUsuarios] = useState([]);
+export default function useUsuariosData(filters = {}) {
+  const [usuariosRaw, setUsuariosRaw] = useState([]);
+  const [estados, setEstados] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { estado = '', search = '' } = options;
 
-  const filterData = useCallback(
-    (data) => data.filter(u =>
-      (!estado || u.estadoNombre === estado) &&
-      (!search || u.nombreusu.toLowerCase().includes(search.toLowerCase()) ||
-       u.apellidosusu.toLowerCase().includes(search.toLowerCase()) ||
-       u.emailusu.toLowerCase().includes(search.toLowerCase()))
-    ),
-    [estado, search]
-  );
+  const { estado = '', search = '' } = filters;
 
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchData = async () => {
+  const loadData = useCallback(async () => {
+    try {
       setLoading(true);
-      setError(null);
-      try {
-        const data = [
-          { idusu: 'USU-01', nombreusu: 'Ana', apellidosusu: 'Gómez', emailusu: 'ana@example.com', contraseniausu: 'secret', idest: 1, estadoNombre: 'Activo' },
-          { idusu: 'USU-02', nombreusu: 'Carlos', apellidosusu: 'Perez', emailusu: 'carlos@example.com', contraseniausu: 'secret', idest: 1, estadoNombre: 'Activo' },
-          { idusu: 'USU-03', nombreusu: 'María', apellidosusu: 'Lopez', emailusu: 'maria@example.com', contraseniausu: 'secret', idest: 2, estadoNombre: 'Borrador' },
-        ];
+      const [uData, estData, rolData] = await Promise.all([
+        usuariosService.getAll(),
+        catalogosService.getEstados(),
+        catalogosService.getRoles()
+      ]);
 
-        if (mounted) {
-          setUsuarios(filterData(data));
-          setLoading(false);
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(err);
-          setLoading(false);
-        }
-      }
-    };
+      setEstados(estData);
+      setRoles(rolData);
 
-    fetchData();
-    return () => { mounted = false; };
-  }, [filterData]);
+      const enriched = uData.map(u => ({
+        ...u,
+        estadoNombre: estData.find(e => e.idest === u.idest)?.nombreest || '—',
+        rolNombre: rolData.find(r => r.idrol === u.idrol)?.nombrerol || '—',
+      }));
 
-  const estadosMap = {
-    '1': 'Activo',
-    '2': 'Borrador',
-    '3': 'Archivado',
+      setUsuariosRaw(enriched);
+    } catch (err) {
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const usuarios = useMemo(() => {
+    return usuariosRaw.filter(u =>
+      (!estado || u.estadoNombre === estado) &&
+      (!search || 
+        u.nombreusu.toLowerCase().includes(search.toLowerCase()) ||
+        u.emailusu.toLowerCase().includes(search.toLowerCase()))
+    );
+  }, [usuariosRaw, estado, search]);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  return { 
+    usuarios, estados, roles, loading, reload: loadData,
+    addUsuario: async (data) => { await usuariosService.create(data); await loadData(); },
+    updateUsuario: async (id, data) => { await usuariosService.update(id, data); await loadData(); }
   };
-
-  const addUsuario = (data) => {
-    const nextIdNumber = usuarios.length + 1;
-    const newId = `USU-${String(nextIdNumber).padStart(2, '0')}`;
-    const newUsu = {
-      idusu: newId,
-      nombreusu: data.nombreusu || '',
-      apellidosusu: data.apellidosusu || '',
-      emailusu: data.emailusu || '',
-      contraseniausu: data.contraseniausu || '',
-      idest: data.idest || '',
-      estadoNombre: estadosMap[String(data.idest)] || data.estadoNombre || '',
-    };
-
-    setUsuarios(prev => [newUsu, ...prev]);
-  };
-
-  return { usuarios, loading, error, addUsuario };
 }

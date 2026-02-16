@@ -1,10 +1,9 @@
 import FilterPanel from '../../../components/FilterPanel';
-import { usuariosFiltersConfig } from '../usuarios.config';
 
-export default function UsuariosFilter({ onFiltersChange }) {
+export default function UsuariosFilter({ config, onFiltersChange }) {
   return (
     <FilterPanel
-      filtersConfig={usuariosFiltersConfig}
+      filtersConfig={config}
       onFiltersChange={onFiltersChange}
     />
   );

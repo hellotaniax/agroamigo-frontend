@@ -1,48 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { FormPanel } from '../../../components/FormPanel';
-import { usuarioFormConfig } from '../usuarios.config';
 
-const ESTADOS_MAP_INVERSE = {
-  'Activo': '1',
-  'Borrador': '2',
-  'Archivado': '3',
-};
-
-const INITIAL_EMPTY_STATE = Object.fromEntries(
-  usuarioFormConfig.map(f => [f.key, ''])
-);
-
-export default function UsuarioForm({ onSubmit, onCancel, initialValues }) {
-  const [formValues, setFormValues] = useState(INITIAL_EMPTY_STATE);
+export default function UsuarioForm({ onSubmit, onCancel, initialValues, config }) {
+  const [formValues, setFormValues] = useState({});
 
   useEffect(() => {
-    if (initialValues) {
-      const processed = {
-        ...initialValues,
-        idest: initialValues.idest || ESTADOS_MAP_INVERSE[initialValues.estadoNombre] || '',
-      };
-      setFormValues(processed);
-    } else {
-      setFormValues(INITIAL_EMPTY_STATE);
-    }
-  }, [initialValues]);
-
-  const handleChange = (key) => (value) =>
-    setFormValues(prev => ({ ...prev, [key]: value }));
+  if (initialValues) {
+    // Modo Edición
+    setFormValues({
+      ...initialValues,
+      contraseniausu: '' // Vacío por seguridad
+    });
+  } else {
+    // Modo Creación: Asegura que todos los campos de la config existan en el estado
+    const emptyState = {};
+    config.forEach(f => { emptyState[f.key] = ''; });
+    setFormValues(emptyState);
+  }
+}, [initialValues, config]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formValues);
-    if (!initialValues) setFormValues(INITIAL_EMPTY_STATE);
+    if (e) e.preventDefault();
+    const dataToSend = { ...formValues, idrol: parseInt(formValues.idrol), idest: parseInt(formValues.idest) };
+
+    if (initialValues) {
+      if (!dataToSend.contraseniausu?.trim()) delete dataToSend.contraseniausu;
+    } else if (!dataToSend.contraseniausu?.trim()) {
+      alert('La contraseña es obligatoria.');
+      return;
+    }
+    onSubmit(dataToSend);
   };
 
-  return (
-    <FormPanel
-      formConfig={usuarioFormConfig}
-      values={formValues}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
-      onCancel={onCancel}
-    />
-  );
+  return <FormPanel formConfig={config} values={formValues} onChange={(k)=>(v)=>setFormValues(p=>({...p,[k]:v}))} onSubmit={handleSubmit} onCancel={onCancel} />;
 }

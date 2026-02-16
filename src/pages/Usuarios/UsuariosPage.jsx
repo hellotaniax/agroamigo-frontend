@@ -5,41 +5,45 @@ import UsuariosFilter from './components/UsuariosFilter';
 import UsuarioForm from './components/UsuarioForm';
 import { AddButton } from '../../components/Buttons';
 import { useState } from 'react';
+import { usuarioFormConfig, usuariosFiltersConfig } from './usuarios.config';
 
 export default function UsuariosPage() {
-  const { usuarios, loading, addUsuario } = useUsuariosData();
-  const [filters, setFilters] = useState({ search: '', state: '' });
+  const [filters, setFilters] = useState({ search: '', estado: '' });
   const [showForm, setShowForm] = useState(false);
+  const { usuarios, loading, addUsuario, updateUsuario, reload, estados, roles } = useUsuariosData(filters);
 
-  const filtered = usuarios.filter(u =>
-    (u.nombreusu.toLowerCase().includes(filters.search.toLowerCase()) ||
-     u.apellidosusu.toLowerCase().includes(filters.search.toLowerCase()) ||
-     u.emailusu.toLowerCase().includes(filters.search.toLowerCase())) &&
-    (filters.state === '' || u.estadoNombre === filters.state)
-  );
+  const dynamicFormConfig = usuarioFormConfig.map(field => {
+  if (field.key === 'idest') {
+    return { ...field, options: estados.map(e => ({ value: String(e.idest), label: e.nombreest })) };
+  }
+  if (field.key === 'idrol') {
+    return { ...field, options: roles.map(r => ({ value: String(r.idrol), label: r.nombrerol })) };
+  }
+  return field; 
+});
 
-  const handleAdd = (data) => {
-    addUsuario(data);
-    setShowForm(false);
-  };
+  const dynamicFiltersConfig = usuariosFiltersConfig.map(filter => {
+    if (filter.key === 'estado') return { ...filter, options: estados.map(e => ({ value: e.nombreest, label: e.nombreest })) };
+    return filter;
+  });
+
+  if (loading && usuarios.length === 0) return <AdminLayout breadcrumbs={[{ label: 'Usuarios' }]}><div>Cargando...</div></AdminLayout>;
 
   return (
     <AdminLayout breadcrumbs={[{ label: 'Usuarios' }]}>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="fw-semibold">Lista de Usuarios</h4>
+        <h4 className="fw-semibold">Gestión de Usuarios</h4>
         <AddButton onClick={() => setShowForm(true)}>Agregar usuario</AddButton>
       </div>
 
       {showForm && (
-        <UsuarioForm
-          onSubmit={handleAdd}
-          onCancel={() => setShowForm(false)}
-        />
+        <div className="mb-4">
+          <UsuarioForm config={dynamicFormConfig} onSubmit={async (d) => { await addUsuario(d); setShowForm(false); }} onCancel={() => setShowForm(false)} />
+        </div>
       )}
 
-      <UsuariosFilter onFiltersChange={setFilters} />
-
-      <UsuariosTable data={filtered} loading={loading} />
+      <UsuariosFilter config={dynamicFiltersConfig} onFiltersChange={setFilters} />
+      <UsuariosTable data={usuarios} loading={loading} onUpdate={updateUsuario} onDataChange={reload} configForm={dynamicFormConfig} />
     </AdminLayout>
   );
 }
