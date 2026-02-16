@@ -508,7 +508,6 @@
     font-size: 12px;
   }
 
-  /* Ajustar espacios en móvil */
   .login-header {
     margin-bottom: 32px;
   }
@@ -532,8 +531,97 @@
     transition: none !important;
   }
 
-  /* detener animación de fondo decorativo */
   .login-page::before {
     animation: none !important;
   }
+}
+
+.login-wrapper--wide {
+  max-width: 540px;
+}
+
+.recuperar-btn {
+  background-color: var(--login-primary) !important;
+  color: #fff !important;
+  border: none;
+  transition: background-color 0.2s ease, transform 0.12s ease;
+}
+.recuperar-btn:hover:not(:disabled) {
+  background-color: #3d8b40 !important;
+  transform: translateY(-1px);
+}
+.recuperar-btn:disabled {
+  background-color: #c8e6c9 !important;
+  cursor: not-allowed;
+}
+
+.login-wrapper--wide .login-form {
+  display: block;
+}
+.login-wrapper--wide .login-form > * {
+  margin-bottom: 28px; 
+}
+.login-wrapper--wide .login-form > *:last-child {
+  margin-bottom: 0;
+}
+
+.login-wrapper--wide .d-flex.justify-content-between {
+  gap: 24px;
+}
+
+.recuperar-btn {
+  border-radius: 12px !important;
+  padding: 10px 18px !important;
+}
+
+.recuperar-btn.w-100 {
+  display: block;
+  width: 100%;
+}
+
+.login-wrapper--wide {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 420px; 
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: center !important;
+  align-items: flex-start; 
+  gap: 24px; 
+  margin-top: 20px; 
+}
+
+.step-indicator .step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  width: 110px; 
+  position: relative;
+}
+
+.step-indicator .step-item .rounded-circle {
+  width: 36px;
+  height: 36px;
+  min-width: 36px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px; 
+}
+
+.step-indicator .step-item small {
+  display: block;
+  width: 100%; 
+  text-align: center;
+  line-height: 1.2;
+  min-height: 28px; 
+}
+
+.login-wrapper--wide .login-form > div.text-center {
+  margin-top: 64px !important;
+  margin-bottom: 16px;
 }

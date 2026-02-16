@@ -17,7 +17,7 @@ export default function RecuperarPasswordPage() {
   return (
     <div className="login-page vh-100 d-flex justify-content-center align-items-center">
       <div className="login-container">
-        <div className="login-wrapper">
+        <div className="login-wrapper login-wrapper--wide">
 
           {/* Header */}
           <div className="text-center mb-4">
@@ -25,14 +25,14 @@ export default function RecuperarPasswordPage() {
           </div>
 
           {/* Step Indicator */}
-          <div className="d-flex justify-content-between align-items-center mb-4 px-2">
+          <div className="d-flex justify-content-center align-items-center mb-4 px-2 step-indicator">
             {steps.map((label, index) => {
               const stepNumber = index + 1;
               const active = state.paso === stepNumber;
               const completed = state.paso > stepNumber;
 
               return (
-                <div key={label} className="text-center flex-fill">
+                <div key={label} className="text-center step-item">
                   <div
                     className={`rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center`}
                     style={{
