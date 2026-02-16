@@ -17,7 +17,7 @@ export default function AdminHeader({ onMenuClick, breadcrumbs = [] }) {
         <div className="header-spacer flex-grow-1" />
         <div className="header-user d-flex align-items-center">
         <button
-          className="logout-btn"
+          className="btn logout-btn"
           onClick={() => {
             authService.logout();
             // fuerza redirección segura a login
