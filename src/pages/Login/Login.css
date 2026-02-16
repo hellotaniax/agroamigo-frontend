@@ -413,7 +413,8 @@
   background-color: var(--login-primary);
   border: none;
   border-radius: 8px;
-  padding: 14px 20px;
+  /* Match input vertical padding and font-size to visually align heights */
+  padding: 12px 16px;
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -425,6 +426,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-sizing: border-box;
+  min-height: 44px; /* approx. input computed height (padding + font + borders) */
   animation: fadeInUp 0.6s ease-out 0.3s backwards;
 }
 

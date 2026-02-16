@@ -78,7 +78,7 @@ export default function LoginForm({
           </Link>
         </div>
 
-        <button type="submit" className="btn btn-success btn-lg w-100 fw-bold" disabled={isLoading || !isFormValid}>
+        <button type="submit" className="btn btn-success btn-lg w-100 fw-bold login-btn" disabled={isLoading || !isFormValid}>
           {isLoading ? (
             <>
               <Spinner animation="border" size="sm" className="me-2" />
