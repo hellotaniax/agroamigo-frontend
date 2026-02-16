@@ -8,7 +8,8 @@ export default function SidebarMenu() {
         <SidebarItem
           key={index}
           {...item}
-          divider={index === 0 || index === 2 || index === 4}
+          /* Ajuste: mover divisores para agrupar 'Aplicaciones' con Cultivos y Fertilizantes */
+          divider={index === 0 || index === 3 || index === 5}
         />
       ))}
     </ul>

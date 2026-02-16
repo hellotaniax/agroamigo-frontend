@@ -52,6 +52,20 @@ export default function FormItem({ field, value, onChange }) {
           </select>
         </div>
       );
+    case 'textarea':
+      return (
+        <div className="mb-2">
+          {field.label && <label className="form-label">{field.label}</label>}
+          <textarea
+            className="form-control"
+            value={value || ''}
+            onChange={handleChange}
+            placeholder={field.placeholder}
+            rows={field.rows || 4}
+            required={field.required}
+          />
+        </div>
+      );
     default:
       return null;
   }
