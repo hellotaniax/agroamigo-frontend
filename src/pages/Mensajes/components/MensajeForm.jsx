@@ -1,48 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { FormPanel } from '../../../components/FormPanel';
-import { mensajeFormConfig } from '../mensajes.config';
 
-
-const ESTADOS_MAP_INVERSE = {
-  'Activo': '1',
-  'Borrador': '2',
-  'Archivado': '3',
-};
-
-
-const INITIAL_EMPTY_STATE = Object.fromEntries(
-  mensajeFormConfig.map(f => [f.key, ''])
-);
-
-export default function MensajeForm({ onSubmit, onCancel, initialValues }) {
-  const [formValues, setFormValues] = useState(INITIAL_EMPTY_STATE);
+export default function MensajeForm({ onSubmit, onCancel, initialValues, config }) {
+  // =========================
+  // Estado inicial del formulario
+  // =========================
+  const [formValues, setFormValues] = useState({
+    codigomen: '',
+    contenidomen: '',
+    idest: '',
+  });
 
   useEffect(() => {
     if (initialValues) {
-      const processedValues = {
-        ...initialValues,
-        // Convertir estadoNombre a idest si es necesario
-        idest: initialValues.idest || ESTADOS_MAP_INVERSE[initialValues.estadoNombre] || '',
-      };
-      setFormValues(processedValues);
+      setFormValues({
+        idmen: initialValues.idmen, // importante para edición
+        codigomen: initialValues.codigomen || '',
+        contenidomen: initialValues.contenidomen || '',
+        idest: initialValues.idest || '',
+      });
     } else {
-      setFormValues(INITIAL_EMPTY_STATE);
+      const emptyState = Object.fromEntries(config.map(f => [f.key, '']));
+      setFormValues(emptyState);
     }
-  }, [initialValues]); 
+  }, [initialValues, config]);
 
-  const handleChange = (key) => (value) => 
+  // =========================
+  // Manejo de cambios
+  // =========================
+  const handleChange = (key) => (value) =>
     setFormValues(prev => ({ ...prev, [key]: value }));
 
+  // =========================
+  // Submit con validación
+  // =========================
   const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formValues);
+    if (e) e.preventDefault();
 
-    if (!initialValues) setFormValues(INITIAL_EMPTY_STATE);
+    // Validar campos requeridos
+    if (!formValues.codigomen || !formValues.contenidomen || !formValues.idest) {
+      alert('Por favor complete todos los campos obligatorios');
+      return;
+    }
+
+    const dataToSend = {
+      codigomen: formValues.codigomen.trim(),
+      contenidomen: formValues.contenidomen.trim(),
+      idest: parseInt(formValues.idest),
+    };
+
+    // Incluir ID si es edición
+    if (formValues.idmen) dataToSend.idmen = formValues.idmen;
+
+    onSubmit(dataToSend);
   };
 
+  // =========================
+  // Render
+  // =========================
   return (
     <FormPanel
-      formConfig={mensajeFormConfig}
+      formConfig={config}
       values={formValues}
       onChange={handleChange}
       onSubmit={handleSubmit}

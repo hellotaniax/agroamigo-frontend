@@ -1,70 +1,70 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import mensajesService from '../../services/mensajes.service'; 
+import catalogosService from '../../services/catalogos.service';
 
-export default function useMensajesData(options = {}) {
-  const [mensajes, setMensajes] = useState([]);
+export default function useMensajesData(filters = {}) {
+  const [mensajesRaw, setMensajesRaw] = useState([]);
+  // NUEVOS ESTADOS: Necesarios para que la página genere los config
+  const [estados, setEstados] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { estado = '', search = '' } = options;
 
-  const filterData = useCallback(
-    (data) => data.filter(m =>
-      (!estado || m.estadoNombre === estado) &&
-      (!search || m.codigomen.toLowerCase().includes(search.toLowerCase()) ||
-       m.contenidomen.toLowerCase().includes(search.toLowerCase()))
-    ),
-    [estado, search]
-  );
+  const { estado = '', search = '' } = filters;
 
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchData = async () => {
+  const loadData = useCallback(async () => {
+    try {
       setLoading(true);
       setError(null);
-      try {
-        const data = [
-          { idmen: 'MEN-01', codigomen: 'WELCOME', contenidomen: '¡Bienvenido! Soy AgroAmigo, tu asistente agrícola.', idest: 1, estadoNombre: 'Activo' },
-          { idmen: 'MEN-02', codigomen: 'HELP', contenidomen: 'Para asistencia, escribe "ayuda".', idest: 1, estadoNombre: 'Activo' },
-          { idmen: 'MEN-03', codigomen: 'GOODBYE', contenidomen: 'Gracias por usar AgroAmigo. ¡Hasta pronto!', idest: 2, estadoNombre: 'Borrador' },
-        ];
 
-        if (mounted) {
-          setMensajes(filterData(data));
-          setLoading(false);
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(err);
-          setLoading(false);
-        }
-      }
-    };
+      const [menData, estData] = await Promise.all([
+        mensajesService.getAll(),
+        catalogosService.getEstados(),
+      ]);
 
-    fetchData();
-    return () => { mounted = false; };
-  }, [filterData]);
+      // Guardamos los catálogos crudos para los selectores
+      setEstados(estData);
 
-  // Mapeo de estados
-  const estadosMap = {
-    '1': 'Activo',
-    '2': 'Borrador',
-    '3': 'Archivado',
+      const enriched = menData.map(m => ({
+        ...m,
+        estadoNombre: estData.find(e => e.idest === m.idest)?.nombreest || '—',
+      }));
+
+      setMensajesRaw(enriched);
+    } catch (err) {
+      console.error('Error cargando mensajes:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const mensajes = useMemo(() => {
+    return mensajesRaw.filter(m =>
+      (!estado || m.estadoNombre === estado) &&
+      (!search || 
+        m.codigomen.toLowerCase().includes(search.toLowerCase()) || 
+        m.contenidomen.toLowerCase().includes(search.toLowerCase()))
+    );
+  }, [mensajesRaw, estado, search]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  return {
+    mensajes,
+    mensajesRaw,
+    estados,      
+    loading,
+    error,
+    reload: loadData,
+    addMensaje: async (data) => {
+      await mensajesService.create(data);
+      await loadData();
+    },
+    deleteMensaje: async (id) => {
+      await mensajesService.remove(id);
+      await loadData();
+    }
   };
-
-  // Función para agregar un mensaje
-  const addMensaje = (data) => {
-    const nextIdNumber = mensajes.length + 1;
-    const newId = `MEN-${String(nextIdNumber).padStart(2, '0')}`;
-    const newMensaje = {
-      idmen: newId,
-      codigomen: data.codigomen || '',
-      contenidomen: data.contenidomen || '',
-      idest: data.idest || '',
-      estadoNombre: estadosMap[String(data.idest)] || data.estadoNombre || '',
-    };
-
-    setMensajes(prev => [newMensaje, ...prev]);
-  };
-
-  return { mensajes, loading, error, addMensaje };
 }
