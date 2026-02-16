@@ -39,6 +39,7 @@ export const usuariosFiltersConfig = [
 ];
 
 export const usuariosColumns = [
+  {header: 'ID', accessor: 'idusu' },
   { header: 'Nombres', accessor: 'nombreusu' },
   { header: 'Apellidos', accessor: 'apellidosusu' },
   { header: 'Email', accessor: 'emailusu' },

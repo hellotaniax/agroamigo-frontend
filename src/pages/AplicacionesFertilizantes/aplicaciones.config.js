@@ -16,6 +16,7 @@ export const aplicacionesFiltersConfig = [
 ];
 
 export const aplicacionesColumns = [
+  {header: 'ID', accessor: 'idapl' },
   { header: 'Fertilizante', accessor: 'fertilizanteNombre' },
   { header: 'Forma', accessor: 'formaNombre' },
   { header: 'Etapa', accessor: 'etapaNombre' },

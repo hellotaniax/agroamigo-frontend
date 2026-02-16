@@ -69,7 +69,8 @@ export const fertilizantesFiltersConfig = [
  * Columnas de la tabla
  * ===============================
  */
-export const fertilizantesColumns = [
+export const fertilizantesColumns = [ 
+  {header: 'ID', accessor: 'idfer' },
   { header: 'Nombre', accessor: 'nombrefer' },
   { header: 'Tipo', accessor: 'tipoNombre' },
   { header: 'Descripción', accessor: 'descripcionfer' },

@@ -56,6 +56,7 @@ export const mensajesFiltersConfig = [
  * ===============================
  */
 export const mensajesColumns = [
+  {header: 'ID', accessor: 'idmen' },
   { header: 'Código', accessor: 'codigomen' },
   { header: 'Contenido', accessor: 'contenidomen' },
   { header: 'Estado', accessor: 'estadoNombre' }, // Nombre enriquecido por el hook
