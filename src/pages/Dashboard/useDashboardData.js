@@ -1,93 +1,96 @@
+import { useState, useEffect } from 'react';
+import cultivosService from '../../services/cultivos.service';
+import recomendacionesService from '../../services/recomendaciones.service';
+import mensajesService from '../../services/mensajes.service';
+import fertilizantesService from '../../services/fertilizantes.service';
+import catalogosService from '../../services/catalogos.service';
 
-import { BiBulb, BiGroup, BiLeaf, BiDroplet } from 'react-icons/bi';
+import { 
+  BiLeaf, 
+  BiMessageSquareDetail, 
+  BiDroplet, 
+  BiCheckCircle 
+} from 'react-icons/bi';
 
 export default function useDashboardData() {
-  return {
-    metrics: [
-      { title: 'Cultivos activos', value: 18, icon: <BiLeaf /> },
-      { title: 'Fertilizantes', value: 12, icon: <BiDroplet /> },
-      { title: 'Recomendaciones', value: 7, icon: <BiBulb /> },
-      { title: 'Usuarios', value: 4, icon: <BiGroup /> },
-    ],
-    lastCultivos: [
-      {
-        id: 1,
-        cultivo: 'Maíz',
-        tipo: 'Cereal',
-        fecha: '2026-02-07',
-        estado: 'Activo',
-        statusClass: 'activo',
-      },
-      {
-        id: 2,
-        cultivo: 'Tomate',
-        tipo: 'Hortaliza',
-        fecha: '2026-02-05',
-        estado: 'Activo',
-        statusClass: 'activo',
-      },
-      {
-        id: 3,
-        cultivo: 'Lechuga',
-        tipo: 'Hortaliza',
-        fecha: '2026-02-03',
-        estado: 'Activo',
-        statusClass: 'borrador',
-      },
-      {
-        id: 4,
-        cultivo: 'Fresa',
-        tipo: 'Fruta',
-        fecha: '2026-02-01',
-        estado: 'Borrador',
-        statusClass: 'borrador',
-      },
-      {
-        id: 5,
-        cultivo: 'Papa',
-        tipo: 'Tubérculo',
-        fecha: '2026-01-28',
-        estado: 'Activo',
-        statusClass: 'activo',
-      },
-      {
-        id: 6,
-        cultivo: 'Zanahoria',
-        tipo: 'Hortaliza',
-        fecha: '2026-01-25',
-        estado: 'Archivado',
-        statusClass: 'archivado',
-      },
-    ],
-    recentRecommendations: [
-      {
-        idrec: 'REC-01',
-        titulorec: 'Riego matutino',
-        descripcionrec: 'Regar temprano en la mañana para mejor absorción de nutrientes.',
-        estadoNombre: 'Activo',
-        prioridadNombre: 'Media',
-      },
-      {
-        idrec: 'REC-02',
-        titulorec: 'Fertilización NPK',
-        descripcionrec: 'Aplicar fertilizante NPK cada 30 días en dosis recomendadas.',
-        estadoNombre: 'Activo',
-        prioridadNombre: 'Alta',
-      },
-      {
-        idrec: 'REC-03',
-        titulorec: 'Inspección de plagas',
-        descripcionrec: 'Inspeccionar hojas semanalmente por signos de plagas o enfermedades.',
-        estadoNombre: 'Activo',
-        prioridadNombre: 'Alta',
-      },
-      {
-        idrec: 'REC-04',
-        titulorec: 'Control de maleza',
-        descripcionrec: 'Realizar limpieza semanal de maleza alrededor de los cultivos.',
-        estadoNombre: 'Activo',
-        prioridadNombre: 'Media',
-      },
-    ],
-  };
+  const [metrics, setMetrics] = useState([]);
+  const [lastCultivos, setLastCultivos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+
+        const [
+          cultivosData,
+          recomendacionesData,
+          mensajesData,
+          fertilizantesData,
+          estadosData,
+          tiposCultivosData
+        ] = await Promise.all([
+          cultivosService.getAll(),
+          recomendacionesService.getAll(),
+          mensajesService.getAll(),
+          fertilizantesService.getAll(),
+          catalogosService.getEstados(),
+          catalogosService.getTiposCultivo(),
+        ]);
+
+        const metricsData = [
+          {
+            title: 'Total Cultivos',
+            value: cultivosData.length,
+            icon: BiLeaf, // ← Pasa el componente (sin </>)
+            color: 'success',
+          },
+          {
+            title: 'Recomendaciones',
+            value: recomendacionesData.length,
+            icon: BiCheckCircle,
+            color: 'info',
+          },
+          {
+            title: 'Mensajes',
+            value: mensajesData.length,
+            icon: BiMessageSquareDetail,
+            color: 'warning',
+          },
+          {
+            title: 'Fertilizantes',
+            value: fertilizantesData.length,
+            icon: BiDroplet,
+            color: 'primary',
+          },
+        ];
+
+        setMetrics(metricsData);
+
+        const cultivosEnriquecidos = cultivosData
+          .map(c => ({
+            ...c,
+            estadoNombre: estadosData.find(e => e.idest === c.idest)?.nombreest || '—',
+            tipoNombre: tiposCultivosData.find(t => t.idtcul === c.idtcul)?.nombretcul || '—',
+          }))
+          .sort((a, b) => {
+            const fechaA = a.creacioncul ? new Date(a.creacioncul) : new Date(0);
+            const fechaB = b.creacioncul ? new Date(b.creacioncul) : new Date(0);
+            return fechaB - fechaA;
+          })
+          .slice(0, 5);
+
+        setLastCultivos(cultivosEnriquecidos);
+
+      } catch (error) {
+        console.error('Error cargando datos del dashboard:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  return { metrics, lastCultivos, loading };
 }
