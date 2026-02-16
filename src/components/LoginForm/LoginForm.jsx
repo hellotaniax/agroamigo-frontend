@@ -1,6 +1,5 @@
 import React from 'react';
 import { Spinner } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import './LoginForm.css';
 
 export default function LoginForm({
@@ -61,7 +60,7 @@ export default function LoginForm({
           </div>
         </div>
 
-        <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
+        <div className="d-flex align-items-center mb-4 mt-3">
           <div className="form-check">
             <input
               type="checkbox"
@@ -72,10 +71,6 @@ export default function LoginForm({
             />
             <label className="form-check-label">Guardar sesión</label>
           </div>
-
-          <Link to="/forgot-password" className="text-decoration-none">
-            ¿Olvidaste tu contraseña?
-          </Link>
         </div>
 
         <button type="submit" className="btn btn-success btn-lg w-100 fw-bold login-btn" disabled={isLoading || !isFormValid}>
