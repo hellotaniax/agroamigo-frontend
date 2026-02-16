@@ -15,7 +15,7 @@ export default function useCatalogos() {
     const loadCatalogos = async () => {
       setLoading(true);
       try {
-        const [tc, tf, es, fa, et, pr, rl] = await Promise.all([
+        const results = await Promise.allSettled([
           catalogosService.getTiposCultivo(),
           catalogosService.getTiposFertilizantes(),
           catalogosService.getEstados(),
@@ -25,9 +25,23 @@ export default function useCatalogos() {
           catalogosService.getRoles(),
         ]);
 
+        // Extraer valores o usar array vacío si falló
+        const [tc, tf, es, fa, et, pr, rl] = results.map((result, index) => {
+          if (result.status === 'fulfilled') {
+            return result.value;
+          } else {
+            // Identificar qué catálogo falló
+            const catalogNames = ['tipos cultivo', 'tipos fertilizantes', 'estados', 'formas aplicación', 'etapas', 'prioridades', 'roles'];
+            console.warn(`No se pudo cargar catálogo "${catalogNames[index]}":`, result.reason?.response?.status || result.reason?.message);
+            return [];
+          }
+        });
+
+        // Mapear solo si hay datos
         setTiposCultivo(tc.map(t => ({ value: t.idtcul, label: t.nombretcul })));
         setTiposFertilizantes(tf.map(t => ({ value: t.idtfer, label: t.nombretfer })));
         setEstados(es.map(e => ({ value: e.idest, label: e.nombreest })));
+        
         // Debug: mostrar respuesta cruda de formas-aplicacion en consola
         console.debug('formas-aplicacion raw:', fa);
 
@@ -44,9 +58,11 @@ export default function useCatalogos() {
             })
             .filter(Boolean)
         );
+        
         setEtapas(et.map(e => ({ value: String(e.ideta), label: e.nombreeta })));
         setPrioridades(pr.map(p => ({ value: p.idpri, label: p.nombrepri })));
         setRoles(rl.map(r => ({ value: r.idrol, label: r.nombrerol })));
+        
       } catch (error) {
         console.error('Error cargando catálogos:', error);
       } finally {
