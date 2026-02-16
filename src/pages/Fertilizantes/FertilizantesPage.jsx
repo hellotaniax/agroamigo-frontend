@@ -14,14 +14,13 @@ export default function FertilizantesPage() {
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState(null);
 
-  const filteredFertilizantes = useMemo(() => {
-    return fertilizantes.filter(f =>
-      f.nombrefer.toLowerCase().includes(filters.search.toLowerCase()) &&
-      (filters.type === '' || f.idtfer === parseInt(filters.type)) &&
-      (filters.state === '' || f.idest === parseInt(filters.state))
-    );
-  }, [fertilizantes, filters]); 
-
+ const filteredFertilizantes = useMemo(() => {
+  return fertilizantes.filter(f =>
+    f.nombrefer.toLowerCase().includes(filters.search.toLowerCase()) &&
+    (filters.type === '' || String(f.idtfer) === String(filters.type)) && 
+    (filters.state === '' || String(f.idest) === String(filters.state))   
+  );
+}, [fertilizantes, filters]);
   const handleAdd = async (data) => {
     try {
       setFormError(null);

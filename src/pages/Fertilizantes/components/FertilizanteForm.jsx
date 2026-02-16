@@ -30,28 +30,22 @@ export default function FertilizanteForm({ onSubmit, onCancel, initialValues }) 
   }, [initialValues]);
 
   const dynamicConfig = useMemo(() => {
-    return fertilizanteFormConfig.map(field => {
-      if (field.key === 'idtfer') {
-        return { 
-          ...field, 
-          options: tiposFertilizantes.map(t => ({ 
-            value: String(t.idtfer), 
-            label: t.nombretfer 
-          })) 
-        };
-      }
-      if (field.key === 'idest') {
-        return { 
-          ...field, 
-          options: estados.map(e => ({ 
-            value: String(e.idest), 
-            label: e.nombreest 
-          })) 
-        };
-      }
-      return field;
-    });
-  }, [tiposFertilizantes, estados]);
+  return fertilizanteFormConfig.map(field => {
+    if (field.key === 'idtfer') {
+      return { 
+        ...field, 
+        options: tiposFertilizantes 
+      };
+    }
+    if (field.key === 'idest') {
+      return { 
+        ...field, 
+        options: estados 
+      };
+    }
+    return field;
+  });
+}, [tiposFertilizantes, estados]);
 
   const handleChange = (key) => (value) =>
     setFormValues(prev => ({ ...prev, [key]: value }));

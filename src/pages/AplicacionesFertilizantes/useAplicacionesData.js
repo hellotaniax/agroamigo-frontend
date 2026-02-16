@@ -1,14 +1,15 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import aplicacionesService from '../../services/aplicacionesfertilizantes.service';
 import catalogosService from '../../services/catalogos.service';
 import fertilizantesService from '../../services/fertilizantes.service';
+import { toast } from 'react-hot-toast'; 
 
 export default function useAplicacionesData() {
   const [aplicRaw, setAplicRaw] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -21,21 +22,15 @@ export default function useAplicacionesData() {
       ]);
 
       const enriched = apps.map(a => {
-        // normalize ids from the application record
-        const appIdFer = a.idfer ?? a.idFertilizante ?? a.id_fer ?? null; // may be code string like 'FER-0003'
-        const appIdFor = a.idfor ?? a.idfap ?? a.id_for ?? a.id_forma ?? null; // numeric or string
+        const appIdFer = a.idfer ?? a.idFertilizante ?? a.id_fer ?? null;
+        const appIdFor = a.idfor ?? a.idfap ?? a.id_for ?? a.id_forma ?? null;
         const appIdEta = a.ideta ?? a.ideta ?? null;
 
-        // find fertilizante by id/code (string match)
         const fert = ferts.find(f => String(f.idfer) === String(appIdFer));
-
-        // find forma by common id fields
         const forma = (formas || []).find(fa => {
           const faId = fa.idfor ?? fa.idfap ?? fa.id ?? fa.value ?? null;
           return faId !== null && String(faId) === String(appIdFor);
         });
-
-        // find etapa
         const etapa = (etapas || []).find(e => String(e.ideta) === String(appIdEta));
 
         return {
@@ -43,9 +38,8 @@ export default function useAplicacionesData() {
           fertilizanteNombre: fert ? (fert.nombrefer || fert.nombre || fert.label) : '—',
           formaNombre: forma ? (forma.nombrefor || forma.nombrefap || forma.nombre || forma.label) : '—',
           etapaNombre: etapa ? (etapa.nombreeta || etapa.nombre || etapa.label) : '—',
-          // expose ids as strings so filters compare ids consistently
-          formaId: appIdFor !== null && appIdFor !== undefined ? String(appIdFor) : '',
-          etapaId: appIdEta !== null && appIdEta !== undefined ? String(appIdEta) : '',
+          formaId: appIdFor !== null ? String(appIdFor) : '',
+          etapaId: appIdEta !== null ? String(appIdEta) : '',
         };
       });
 
@@ -56,59 +50,60 @@ export default function useAplicacionesData() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const aplicaciones = useMemo(() => aplicRaw, [aplicRaw]);
+  }, []);
 
   const addAplicacion = async (data) => {
-    try {
-      // Normalizar payload: enviar idfer como string (ej. "FER-0003") y idfor como number
-      const payload = {
-        ...data,
-        idfer: data.idfer ?? (data.fertilizanteCodigo ?? null),
-        idfor: data.idfor ? Number(data.idfor) : (data.idfap ? Number(data.idfap) : null),
-      };
-      // eliminar posibles claves redundantes que la API no espera
-      if (payload.idfap) delete payload.idfap;
+    const payload = {
+      ...data,
+      idfer: data.idfer ?? null,
+      idfor: data.idfor ? Number(data.idfor) : null,
+    };
 
-      console.debug('addAplicacion - payload ->', payload);
-
-      if (!payload.idfer || payload.idfor === null || payload.idfor === undefined) {
-        throw new Error('Faltan identificadores obligatorios (idfer o idfor). Revisa el formulario.');
+    return toast.promise(
+      (async () => {
+        await aplicacionesService.create(payload);
+        await loadData();
+      })(),
+      {
+        loading: 'Registrando aplicación...',
+        success: '¡Aplicación guardada con éxito!',
+        error: 'Error al registrar la aplicación.',
       }
-
-      await aplicacionesService.create(payload);
-      await loadData();
-    } catch (err) {
-      console.error('Error agregando aplicación:', err);
-      throw err;
-    }
+    );
   };
 
   const updateAplicacion = async (id, data) => {
-    try {
-      await aplicacionesService.update(id, data);
-      await loadData();
-    } catch (err) {
-      console.error('Error actualizando aplicación:', err);
-      throw err;
-    }
+    return toast.promise(
+      (async () => {
+        await aplicacionesService.update(id, data);
+        await loadData();
+      })(),
+      {
+        loading: 'Actualizando registro...',
+        success: '¡Cambios aplicados correctamente!',
+        error: 'No se pudo actualizar el registro.',
+      }
+    );
   };
 
   const deleteAplicacion = async (id) => {
-    try {
-      await aplicacionesService.remove(id);
-      await loadData();
-    } catch (err) {
-      console.error('Error eliminando aplicación:', err);
-      throw err;
-    }
+    return toast.promise(
+      (async () => {
+        await aplicacionesService.remove(id);
+        await loadData();
+      })(),
+      {
+        loading: 'Eliminando registro...',
+        success: 'Aplicación eliminada.',
+        error: 'Error al eliminar.',
+      }
+    );
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [loadData]);
 
   return {
-    aplicaciones,
+    aplicaciones: aplicRaw,
     loading,
     error,
     reload: loadData,

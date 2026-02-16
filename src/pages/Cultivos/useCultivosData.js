@@ -1,22 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import cultivosService from '../../services/cultivos.service';
 import catalogosService from '../../services/catalogos.service';
+import { toast } from 'react-hot-toast'; 
 
 export default function useCultivosData() {
   const [cultivos, setCultivos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-
       const [cultivosData, tipos, estados] = await Promise.all([
         cultivosService.getAll(),
         catalogosService.getTiposCultivo(),
         catalogosService.getEstados(),
       ]);
 
-      // 🔥 Mapear nombres correctamente
       const enriched = cultivosData.map(c => ({
         ...c,
         tipoNombre: tipos.find(t => t.idtcul === c.idtcul)?.nombretcul || '—',
@@ -29,48 +28,60 @@ export default function useCultivosData() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const addCultivo = async (data) => {
-    try {
-      await cultivosService.create(data);
-      await loadData(); // Recargar lista después de agregar
-    } catch (error) {
-      console.error('Error agregando cultivo:', error);
-      throw error; // Propagar el error para manejarlo en el componente
-    }
+    return toast.promise(
+      (async () => {
+        await cultivosService.create(data);
+        await loadData();
+      })(),
+      {
+        loading: 'Registrando cultivo...',
+        success: '¡Cultivo guardado con éxito!',
+        error: 'No se pudo guardar el cultivo.',
+      }
+    );
   };
 
   const updateCultivo = async (id, data) => {
-    try {
-      await cultivosService.update(id, data);
-      await loadData(); // Recargar lista después de actualizar
-    } catch (error) {
-      console.error('Error actualizando cultivo:', error);
-      throw error;
-    }
+    return toast.promise(
+      (async () => {
+        await cultivosService.update(id, data);
+        await loadData();
+      })(),
+      {
+        loading: 'Actualizando datos del cultivo...',
+        success: '¡Cambios aplicados correctamente!',
+        error: 'Error al actualizar el cultivo.',
+      }
+    );
   };
 
   const deleteCultivo = async (id) => {
-    try {
-      await cultivosService.remove(id);
-      await loadData(); // Recargar lista después de eliminar
-    } catch (error) {
-      console.error('Error eliminando cultivo:', error);
-      throw error;
-    }
+    return toast.promise(
+      (async () => {
+        await cultivosService.remove(id);
+        await loadData();
+      })(),
+      {
+        loading: 'Eliminando cultivo...',
+        success: 'Cultivo eliminado.',
+        error: 'No se pudo eliminar el cultivo.',
+      }
+    );
   };
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   return { 
     cultivos, 
     loading, 
     reload: loadData,
-    addCultivo,      
+    addCultivo,       
     updateCultivo,   
-    deleteCultivo,   // futuro: botón eliminar en la tabla
+    deleteCultivo,   
   };
 }

@@ -4,16 +4,12 @@ import { cultivosColumns } from '../cultivos.config';
 import { getBadgeClass } from '../../../utils/badgeStates';
 import CultivoForm from './CultivoForm';
 import Modal from '../../../components/Modal';
-import cultivosService from '../../../services/cultivos.service';
 import { BiEdit } from 'react-icons/bi';
 import { ButtonPrimary } from '../../../components/Buttons';
 
-export default function CultivosTable({ data, loading, showActions = true, onDataChange }) {
+export default function CultivosTable({ data, loading, showActions = true, onUpdate, onDataChange }) {
   const [editingCultivo, setEditingCultivo] = useState(null);
 
-  // =========================
-  // Renderizadores
-  // =========================
   const renderEstado = (row) => (
     <span className={`badge ${getBadgeClass(row.estadoNombre)}`}>
       {row.estadoNombre}
@@ -28,9 +24,6 @@ export default function CultivosTable({ data, loading, showActions = true, onDat
     return col;
   });
 
-  // =========================
-  // Acciones por fila
-  // =========================
   const rowActions = showActions
     ? (row) => (
         <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
@@ -45,32 +38,21 @@ export default function CultivosTable({ data, loading, showActions = true, onDat
 
   const handleFormSubmit = async (updatedCultivo) => {
     try {
-      await cultivosService.update(updatedCultivo.idcul, updatedCultivo);
-      setEditingCultivo(null);
-      if (onDataChange) onDataChange(); // Dispara reload en el page
+      if (onUpdate && editingCultivo) {
+        await onUpdate(editingCultivo.idcul, updatedCultivo);
+        setEditingCultivo(null);
+      }
     } catch (error) {
-      console.error('Error actualizando cultivo:', error);
-      alert('Error al actualizar el cultivo');
+      console.error('Error en el submit de cultivos:', error);
     }
   };
 
   return (
     <>
-      <TableCard
-        title="Cultivos registrados"
-        columns={columns}
-        data={data}
-        loading={loading}
-        rowActions={rowActions}
-      />
-
+      <TableCard title="Cultivos registrados" columns={columns} data={data} loading={loading} rowActions={rowActions} />
       {editingCultivo && (
         <Modal onClose={handleFormClose}>
-          <CultivoForm
-            initialValues={editingCultivo}
-            onCancel={handleFormClose}
-            onSubmit={handleFormSubmit}
-          />
+          <CultivoForm initialValues={editingCultivo} onCancel={handleFormClose} onSubmit={handleFormSubmit} />
         </Modal>
       )}
     </>

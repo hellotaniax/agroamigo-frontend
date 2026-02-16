@@ -4,35 +4,34 @@ import AplicacionesTable from './components/AplicacionesTable';
 import AplicacionesFilter from './components/AplicacionesFilter';
 import AplicacionForm from './components/AplicacionForm';
 import { AddButton } from '../../components/Buttons';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 export default function AplicacionesFertilizantesPage() {
-  const { aplicaciones, loading, addAplicacion, reload } = useAplicacionesData();
   const [filters, setFilters] = useState({ search: '', forma: '', etapa: '' });
+  
+
+  const { aplicaciones, loading, addAplicacion, updateAplicacion, reload } = useAplicacionesData();
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState(null);
 
-  const filtered = aplicaciones.filter(a =>
-    a.fertilizanteNombre.toLowerCase().includes(filters.search.toLowerCase()) &&
-    (filters.forma === '' || a.formaId === filters.forma) &&
-    (filters.etapa === '' || a.etapaId === filters.etapa)
-  );
+
+  const filtered = useMemo(() => {
+    return aplicaciones.filter(a =>
+      a.fertilizanteNombre.toLowerCase().includes(filters.search.toLowerCase()) &&
+      (filters.forma === '' || a.formaId === filters.forma) &&
+      (filters.etapa === '' || a.etapaId === filters.etapa)
+    );
+  }, [aplicaciones, filters]);
 
   const handleAdd = async (data) => {
     try {
       setFormError(null);
-      await addAplicacion(data);
+      await addAplicacion(data); // El toast se dispara desde el hook
       setShowForm(false);
-      reload();
     } catch (err) {
-      console.error(err);
-      setFormError('Error al guardar la aplicación. Inténtalo de nuevo.');
+      setFormError('Revisa los datos ingresados e intenta de nuevo.');
     }
   };
-
-  // DEBUG: mostrar filtros y primeras aplicaciones (temporal)
-  console.debug('AplicacionesPage - filters ->', filters);
-  console.debug('AplicacionesPage - aplicaciones sample ->', aplicaciones.slice(0, 5));
 
   return (
     <AdminLayout breadcrumbs={[{ label: 'Aplicaciones de fertilizantes' }]}>
@@ -42,10 +41,8 @@ export default function AplicacionesFertilizantesPage() {
       </div>
 
       {showForm && (
-        <div>
-          {formError && (
-            <div className="alert alert-danger" role="alert">{formError}</div>
-          )}
+        <div className="mb-4">
+          {formError && <div className="alert alert-danger">{formError}</div>}
           <AplicacionForm
             onSubmit={handleAdd}
             onCancel={() => { setShowForm(false); setFormError(null); }}
@@ -58,6 +55,7 @@ export default function AplicacionesFertilizantesPage() {
       <AplicacionesTable
         data={filtered}
         loading={loading}
+        onUpdate={updateAplicacion} // ✅ VITAL para la notificación
         onDataChange={reload}
       />
     </AdminLayout>
