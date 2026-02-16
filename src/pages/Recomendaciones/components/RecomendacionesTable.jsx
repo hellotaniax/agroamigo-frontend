@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import TableCard from '../../../components/TableCard';
-import { recomendacionesColumns, estadoBadgeClass } from '../recomendaciones.config';
+import { recomendacionesColumns } from '../recomendaciones.config';
 import { ButtonPrimary } from '../../../components/Buttons'; 
 import { BiEdit } from 'react-icons/bi'; 
 import RecomendacionForm from './RecomendacionForm';
 import Modal from '../../../components/Modal';
 import recomendacionesService from '../../../services/recomendaciones.service';
+import { getBadgeClass } from '../../../utils/badgeStates';
 
 export default function RecomendacionesTable({ data, loading, onDataChange, configForm, showActions = true }) {
   const [editingRec, setEditingRec] = useState(null);
@@ -13,11 +14,12 @@ export default function RecomendacionesTable({ data, loading, onDataChange, conf
   // =========================
   // Renderizado de badges
   // =========================
-  const renderEstado = (row) => (
-    <span className={`badge ${estadoBadgeClass[row.estadoNombre] || ''}`}>
-      {row.estadoNombre}
-    </span>
-  );
+const renderEstado = (row) => (
+  <span className={`badge ${getBadgeClass(row.estadoNombre)}`}>
+    {row.estadoNombre}
+  </span>
+);
+
 
   const renderPrioridad = (row) => (
     <span className="text-muted fw-medium">{row.prioridadNombre || '—'}</span>

@@ -75,12 +75,3 @@ export const recomendacionesColumns = [
   { header: 'Prioridad', accessor: 'prioridadNombre' }, // Nombre enriquecido por el hook
   { header: 'Estado', accessor: 'estadoNombre' },       // Nombre enriquecido por el hook
 ];
-
-/**
- * Clases para badges de estado
- */
-export const estadoBadgeClass = {
-  Activo: 'activo',
-  Borrador: 'borrador',
-  Inactivo: 'inactivo',
-};
