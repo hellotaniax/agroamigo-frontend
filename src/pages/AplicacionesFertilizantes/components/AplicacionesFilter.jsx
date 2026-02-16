@@ -29,6 +29,13 @@ export default function AplicacionesFilter({ onFiltersChange }) {
   }), [formasAplicacion, etapas]);
 
   return (
-    <FilterPanel filtersConfig={dynamic} onFiltersChange={onFiltersChange} loading={loading} />
+    <FilterPanel
+      filtersConfig={dynamic}
+      onFiltersChange={(vals) => {
+        console.debug('AplicacionesFilter - onFiltersChange ->', vals);
+        onFiltersChange(vals);
+      }}
+      loading={loading}
+    />
   );
 }

@@ -14,8 +14,8 @@ export default function AplicacionesFertilizantesPage() {
 
   const filtered = aplicaciones.filter(a =>
     a.fertilizanteNombre.toLowerCase().includes(filters.search.toLowerCase()) &&
-    (filters.forma === '' || a.formaNombre === filters.forma) &&
-    (filters.etapa === '' || a.etapaNombre === filters.etapa)
+    (filters.forma === '' || a.formaId === filters.forma) &&
+    (filters.etapa === '' || a.etapaId === filters.etapa)
   );
 
   const handleAdd = async (data) => {
@@ -29,6 +29,10 @@ export default function AplicacionesFertilizantesPage() {
       setFormError('Error al guardar la aplicación. Inténtalo de nuevo.');
     }
   };
+
+  // DEBUG: mostrar filtros y primeras aplicaciones (temporal)
+  console.debug('AplicacionesPage - filters ->', filters);
+  console.debug('AplicacionesPage - aplicaciones sample ->', aplicaciones.slice(0, 5));
 
   return (
     <AdminLayout breadcrumbs={[{ label: 'Aplicaciones de fertilizantes' }]}>

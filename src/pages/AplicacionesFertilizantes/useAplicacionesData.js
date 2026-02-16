@@ -43,6 +43,9 @@ export default function useAplicacionesData() {
           fertilizanteNombre: fert ? (fert.nombrefer || fert.nombre || fert.label) : '—',
           formaNombre: forma ? (forma.nombrefor || forma.nombrefap || forma.nombre || forma.label) : '—',
           etapaNombre: etapa ? (etapa.nombreeta || etapa.nombre || etapa.label) : '—',
+          // expose ids as strings so filters compare ids consistently
+          formaId: appIdFor !== null && appIdFor !== undefined ? String(appIdFor) : '',
+          etapaId: appIdEta !== null && appIdEta !== undefined ? String(appIdEta) : '',
         };
       });
 

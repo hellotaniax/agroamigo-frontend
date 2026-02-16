@@ -44,7 +44,7 @@ export default function useCatalogos() {
             })
             .filter(Boolean)
         );
-        setEtapas(et.map(e => ({ value: e.ideta, label: e.nombreeta })));
+        setEtapas(et.map(e => ({ value: String(e.ideta), label: e.nombreeta })));
         setPrioridades(pr.map(p => ({ value: p.idpri, label: p.nombrepri })));
         setRoles(rl.map(r => ({ value: r.idrol, label: r.nombrerol })));
       } catch (error) {
