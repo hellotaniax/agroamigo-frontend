@@ -69,7 +69,6 @@ export const recomendacionesFiltersConfig = [
  * ===============================
  */
 export const recomendacionesColumns = [
-  { header: 'ID', accessor: 'idrec' },
   { header: 'Título', accessor: 'titulorec' },
   { header: 'Descripción', accessor: 'descripcionrec' },
   { header: 'Prioridad', accessor: 'prioridadNombre' }, // Nombre enriquecido por el hook

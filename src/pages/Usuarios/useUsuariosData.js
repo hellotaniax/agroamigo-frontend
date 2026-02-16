@@ -5,10 +5,11 @@ import catalogosService from '../../services/catalogos.service';
 export default function useUsuariosData(filters = {}) {
   const [usuariosRaw, setUsuariosRaw] = useState([]);
   const [estados, setEstados] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const [roles, setRoles] = useState([]); // Guardamos los roles aquí
   const [loading, setLoading] = useState(true);
 
-  const { estado = '', search = '' } = filters;
+  //  Extraemos 'rol' de los filtros
+  const { estado = '', search = '', rol = '' } = filters;
 
   const loadData = useCallback(async () => {
     try {
@@ -39,11 +40,12 @@ export default function useUsuariosData(filters = {}) {
   const usuarios = useMemo(() => {
     return usuariosRaw.filter(u =>
       (!estado || u.estadoNombre === estado) &&
+      (!rol || u.rolNombre === rol) && // 
       (!search || 
         u.nombreusu.toLowerCase().includes(search.toLowerCase()) ||
         u.emailusu.toLowerCase().includes(search.toLowerCase()))
     );
-  }, [usuariosRaw, estado, search]);
+  }, [usuariosRaw, estado, search, rol]); 
 
   useEffect(() => { loadData(); }, [loadData]);
 

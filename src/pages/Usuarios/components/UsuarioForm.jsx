@@ -1,36 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FormPanel } from '../../../components/FormPanel';
 
 export default function UsuarioForm({ onSubmit, onCancel, initialValues, config }) {
   const [formValues, setFormValues] = useState({});
 
+  // Filtrar configuración (ocultar password en edición)
+  const activeConfig = useMemo(() => {
+    if (initialValues) {
+      return config.filter(field => field.key !== 'passwordusu');
+    }
+    return config;
+  }, [config, initialValues]);
+
   useEffect(() => {
-  if (initialValues) {
-    // Modo Edición
-    setFormValues({
-      ...initialValues,
-      contraseniausu: '' // Vacío por seguridad
-    });
-  } else {
-    // Modo Creación: Asegura que todos los campos de la config existan en el estado
-    const emptyState = {};
-    config.forEach(f => { emptyState[f.key] = ''; });
-    setFormValues(emptyState);
-  }
-}, [initialValues, config]);
+    if (initialValues) {
+      setFormValues({ ...initialValues, passwordusu: '' });
+    } else {
+      const emptyState = {};
+      config.forEach(f => { emptyState[f.key] = ''; });
+      setFormValues(emptyState);
+    }
+  }, [initialValues, config]);
+
+  //  Validar formato de Email
+  const isValidEmail = (email) => {
+    // Expresión regular simple para validar correos
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
 
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
-    const dataToSend = { ...formValues, idrol: parseInt(formValues.idrol), idest: parseInt(formValues.idest) };
+    
+    // Validar Email antes de hacer nada
+    if (formValues.emailusu && !isValidEmail(formValues.emailusu)) {
+      alert('Por favor, ingrese un correo electrónico válido (ejemplo: usuario@agroamigo.com).');
+      return; // ⛔ DETIENE EL ENVÍO AQUÍ
+    }
+
+    const dataToSend = { 
+      ...formValues, 
+      idrol: parseInt(formValues.idrol), 
+      idest: parseInt(formValues.idest) 
+    };
 
     if (initialValues) {
-      if (!dataToSend.contraseniausu?.trim()) delete dataToSend.contraseniausu;
-    } else if (!dataToSend.contraseniausu?.trim()) {
-      alert('La contraseña es obligatoria.');
-      return;
+      delete dataToSend.passwordusu;
+    } else {
+      if (!dataToSend.passwordusu?.trim()) {
+        alert('La contraseña es obligatoria.');
+        return;
+      }
     }
+
     onSubmit(dataToSend);
   };
 
-  return <FormPanel formConfig={config} values={formValues} onChange={(k)=>(v)=>setFormValues(p=>({...p,[k]:v}))} onSubmit={handleSubmit} onCancel={onCancel} />;
+  return (
+    <FormPanel 
+      formConfig={activeConfig} 
+      values={formValues} 
+      onChange={(k)=>(v)=>setFormValues(p=>({...p,[k]:v}))} 
+      onSubmit={handleSubmit} 
+      onCancel={onCancel} 
+    />
+  );
 }
