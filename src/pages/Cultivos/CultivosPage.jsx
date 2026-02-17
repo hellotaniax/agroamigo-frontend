@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'; // ✅ Importar useMemo
+import React, { useState, useMemo } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import useCultivosData from './useCultivosData';
 import CultivosTable from './components/CultivosTable';
@@ -11,6 +11,7 @@ export default function CultivosPage() {
   const [filters, setFilters] = useState({ search: '', state: '', date: '' });
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false); // ✅ Nuevo estado
 
   const filteredCultivos = useMemo(() => {
     return cultivos.filter(c => {
@@ -32,7 +33,10 @@ export default function CultivosPage() {
   };
 
   return (
-    <AdminLayout breadcrumbs={[{ label: 'Cultivos' }]}>
+    <AdminLayout 
+      breadcrumbs={[{ label: 'Cultivos' }]}
+      hideHeader={isEditing} // ✅ Ocultar header cuando se está editando
+    >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Lista de Cultivos</h4>
         <AddButton onClick={() => setShowForm(true)}>Agregar cultivo</AddButton>
@@ -53,8 +57,10 @@ export default function CultivosPage() {
       <CultivosTable 
         data={filteredCultivos} 
         loading={loading}
-        onUpdate={updateCultivo} // ✅ VITAL: Pasar función del hook
+        onUpdate={updateCultivo}
         onDataChange={reload}
+        onEditStart={() => setIsEditing(true)} // ✅ Cuando comienza edición
+        onEditEnd={() => setIsEditing(false)}   // ✅ Cuando termina edición
       />
     </AdminLayout>
   );

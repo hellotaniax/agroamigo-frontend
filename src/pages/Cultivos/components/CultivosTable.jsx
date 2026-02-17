@@ -7,7 +7,15 @@ import Modal from '../../../components/Modal';
 import { BiEdit } from 'react-icons/bi';
 import { ButtonPrimary } from '../../../components/Buttons';
 
-export default function CultivosTable({ data, loading, showActions = true, onUpdate, onDataChange }) {
+export default function CultivosTable({ 
+  data, 
+  loading, 
+  showActions = true, 
+  onUpdate, 
+  onDataChange,
+  onEditStart,  // ✅ Nueva prop
+  onEditEnd     // ✅ Nueva prop
+}) {
   const [editingCultivo, setEditingCultivo] = useState(null);
 
   const renderEstado = (row) => (
@@ -27,20 +35,30 @@ export default function CultivosTable({ data, loading, showActions = true, onUpd
   const rowActions = showActions
     ? (row) => (
         <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary icon={BiEdit} onClick={() => setEditingCultivo(row)}>
+          <ButtonPrimary 
+            icon={BiEdit} 
+            onClick={() => {
+              setEditingCultivo(row);
+              onEditStart?.(); // ✅ Notificar que comenzó la edición
+            }}
+          >
             Editar
           </ButtonPrimary>
         </div>
       )
     : null;
 
-  const handleFormClose = () => setEditingCultivo(null);
+  const handleFormClose = () => {
+    setEditingCultivo(null);
+    onEditEnd?.(); // ✅ Notificar que terminó la edición
+  };
 
   const handleFormSubmit = async (updatedCultivo) => {
     try {
       if (onUpdate && editingCultivo) {
         await onUpdate(editingCultivo.idcul, updatedCultivo);
         setEditingCultivo(null);
+        onEditEnd?.(); // ✅ Notificar que terminó la edición
       }
     } catch (error) {
       console.error('Error en el submit de cultivos:', error);
@@ -49,10 +67,20 @@ export default function CultivosTable({ data, loading, showActions = true, onUpd
 
   return (
     <>
-      <TableCard title="Cultivos registrados" columns={columns} data={data} loading={loading} rowActions={rowActions} />
+      <TableCard 
+        title="Cultivos registrados" 
+        columns={columns} 
+        data={data} 
+        loading={loading} 
+        rowActions={rowActions} 
+      />
       {editingCultivo && (
         <Modal onClose={handleFormClose}>
-          <CultivoForm initialValues={editingCultivo} onCancel={handleFormClose} onSubmit={handleFormSubmit} />
+          <CultivoForm 
+            initialValues={editingCultivo} 
+            onCancel={handleFormClose} 
+            onSubmit={handleFormSubmit} 
+          />
         </Modal>
       )}
     </>

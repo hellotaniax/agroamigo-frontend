@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import AdminHeader from '../../components/AdminHeader';
 import './AdminLayout.css';
 
-export default function AdminLayout({ children, breadcrumbs = [] }) {
+export default function AdminLayout({ children, breadcrumbs = [], hideHeader = false }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -12,7 +11,7 @@ export default function AdminLayout({ children, breadcrumbs = [] }) {
       <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <div className="content-area flex-grow-1">
-        <AdminHeader onMenuClick={() => setMobileOpen(true)} />
+        {!hideHeader && <AdminHeader onMenuClick={() => setMobileOpen(true)} />}
 
         {/* Breadcrumbs */}
         {breadcrumbs.length > 0 && (
@@ -40,4 +39,3 @@ export default function AdminLayout({ children, breadcrumbs = [] }) {
     </div>
   );
 }
-
