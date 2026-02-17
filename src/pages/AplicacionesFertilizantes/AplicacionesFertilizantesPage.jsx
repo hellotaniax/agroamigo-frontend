@@ -18,8 +18,9 @@ export default function AplicacionesFertilizantesPage() {
   const filtered = useMemo(() => {
     return aplicaciones.filter(a =>
       a.fertilizanteNombre.toLowerCase().includes(filters.search.toLowerCase()) &&
-      (filters.forma === '' || a.formaId === filters.forma) &&
-      (filters.etapa === '' || a.etapaId === filters.etapa)
+      (filters.forma === '' || String(a.idfor) === filters.forma) &&
+      (filters.etapa === '' || String(a.ideta) === filters.etapa) &&
+      (filters.estado === '' || String(a.idest) === filters.estado) // Nuevo filtro lógico
     );
   }, [aplicaciones, filters]);
 

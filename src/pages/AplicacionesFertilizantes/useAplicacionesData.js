@@ -12,40 +12,39 @@ export default function useAplicacionesData() {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
-
-      const [apps, formas, etapas, ferts] = await Promise.all([
+      const [apps, formas, etapas, ferts, estados] = await Promise.all([
         aplicacionesService.getAll(),
         catalogosService.getFormasAplicacion(),
         catalogosService.getEtapas(),
         fertilizantesService.getAll(),
+        catalogosService.getEstados(), // Nueva llamada a catálogo
       ]);
 
       const enriched = apps.map(a => {
-        const appIdFer = a.idfer ?? a.idFertilizante ?? a.id_fer ?? null;
-        const appIdFor = a.idfor ?? a.idfap ?? a.id_for ?? a.id_forma ?? null;
-        const appIdEta = a.ideta ?? a.ideta ?? null;
+        const appIdFer = a.idfer ?? null;
+        const appIdFor = a.idfor ?? null;
+        const appIdEta = a.ideta ?? null;
+        const appIdEst = a.idest ?? null; // Nuevo
 
         const fert = ferts.find(f => String(f.idfer) === String(appIdFer));
-        const forma = (formas || []).find(fa => {
-          const faId = fa.idfor ?? fa.idfap ?? fa.id ?? fa.value ?? null;
-          return faId !== null && String(faId) === String(appIdFor);
-        });
+        const forma = (formas || []).find(fa => String(fa.idfor || fa.value) === String(appIdFor));
         const etapa = (etapas || []).find(e => String(e.ideta) === String(appIdEta));
+        const estado = (estados || []).find(es => String(es.idest) === String(appIdEst)); // Nuevo
 
         return {
           ...a,
-          fertilizanteNombre: fert ? (fert.nombrefer || fert.nombre || fert.label) : '—',
-          formaNombre: forma ? (forma.nombrefor || forma.nombrefap || forma.nombre || forma.label) : '—',
-          etapaNombre: etapa ? (etapa.nombreeta || etapa.nombre || etapa.label) : '—',
+          fertilizanteNombre: fert ? fert.nombrefer : '—',
+          formaNombre: forma ? (forma.nombrefor || forma.label) : '—',
+          etapaNombre: etapa ? (etapa.nombreeta || etapa.label) : '—',
+          estadoNombre: estado ? (estado.nombreest || estado.label) : '—', // Nuevo
           formaId: appIdFor !== null ? String(appIdFor) : '',
           etapaId: appIdEta !== null ? String(appIdEta) : '',
+          estadoId: appIdEst !== null ? String(appIdEst) : '', // Nuevo
         };
       });
 
       setAplicRaw(enriched);
     } catch (err) {
-      console.error('Error cargando aplicaciones:', err);
       setError(err);
     } finally {
       setLoading(false);
@@ -53,62 +52,22 @@ export default function useAplicacionesData() {
   }, []);
 
   const addAplicacion = async (data) => {
-    const payload = {
-      ...data,
-      idfer: data.idfer ?? null,
-      idfor: data.idfor ? Number(data.idfor) : null,
-    };
-
+    const payload = { ...data, idest: Number(data.idest) }; // Asegura envío de idest
     return toast.promise(
-      (async () => {
-        await aplicacionesService.create(payload);
-        await loadData();
-      })(),
-      {
-        loading: 'Registrando aplicación...',
-        success: '¡Aplicación guardada con éxito!',
-        error: 'Error al registrar la aplicación.',
-      }
+      (async () => { await aplicacionesService.create(payload); await loadData(); })(),
+      { loading: 'Registrando...', success: '¡Éxito!', error: 'Error al guardar.' }
     );
   };
 
   const updateAplicacion = async (id, data) => {
+    const payload = { ...data, idest: Number(data.idest) };
     return toast.promise(
-      (async () => {
-        await aplicacionesService.update(id, data);
-        await loadData();
-      })(),
-      {
-        loading: 'Actualizando registro...',
-        success: '¡Cambios aplicados correctamente!',
-        error: 'No se pudo actualizar el registro.',
-      }
-    );
-  };
-
-  const deleteAplicacion = async (id) => {
-    return toast.promise(
-      (async () => {
-        await aplicacionesService.remove(id);
-        await loadData();
-      })(),
-      {
-        loading: 'Eliminando registro...',
-        success: 'Aplicación eliminada.',
-        error: 'Error al eliminar.',
-      }
+      (async () => { await aplicacionesService.update(id, payload); await loadData(); })(),
+      { loading: 'Actualizando...', success: '¡Éxito!', error: 'Error.' }
     );
   };
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  return {
-    aplicaciones: aplicRaw,
-    loading,
-    error,
-    reload: loadData,
-    addAplicacion,
-    updateAplicacion,
-    deleteAplicacion,
-  };
+  return { aplicaciones: aplicRaw, loading, error, reload: loadData, addAplicacion, updateAplicacion };
 }

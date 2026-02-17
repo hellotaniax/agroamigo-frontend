@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import TableCard from '../../../components/TableCard';
 import { aplicacionesColumns } from '../aplicaciones.config';
+import { getBadgeClass } from '../../../utils/badgeStates'; // ✅ Importación necesaria
 import AplicacionForm from './AplicacionForm';
 import Modal from '../../../components/Modal';
 import { BiEdit } from 'react-icons/bi';
@@ -12,13 +13,29 @@ export default function AplicacionesTable({
   loading, 
   onUpdate, 
   showActions = true,
-  onEditStart,  // ✅ Nueva prop
-  onEditEnd     // ✅ Nueva prop
+  onEditStart,  
+  onEditEnd     
 }) {
   const [editing, setEditing] = useState(null);
 
+  // ✅ Función de renderizado idéntica a FertilizantesTable para mantener el tamaño
+  const renderEstado = (row) => (
+    <span className={`badge ${getBadgeClass(row.estadoNombre)}`}>
+      {row.estadoNombre}
+    </span>
+  );
+
   const columns = aplicacionesColumns.map(col => {
-    if (col.accessor === 'dosisRange') return { ...col, render: (row) => `${row.dosisminapl} - ${row.dosismaxapl}` };
+    if (col.accessor === 'dosisRange') {
+      return { ...col, render: (row) => `${row.dosisminapl} - ${row.dosismaxapl}` };
+    }
+
+    if (col.accessor === 'estadoNombre') {
+      return {
+        ...col,
+        render: renderEstado
+      };
+    }
     return col;
   });
 
@@ -31,7 +48,7 @@ export default function AplicacionesTable({
               icon={BiEdit} 
               onClick={() => {
                 setEditing(row);
-                onEditStart?.(); // ✅ Notificar que comenzó la edición
+                onEditStart?.(); 
               }}
             >
               Editar
@@ -43,7 +60,7 @@ export default function AplicacionesTable({
 
   const handleClose = () => {
     setEditing(null);
-    onEditEnd?.(); // ✅ Notificar que terminó la edición
+    onEditEnd?.(); 
   };
 
   const handleSubmit = async (updated) => {
@@ -52,7 +69,7 @@ export default function AplicacionesTable({
       if (onUpdate) {
         await onUpdate(id, updated);
         setEditing(null);
-        onEditEnd?.(); // ✅ Notificar que terminó la edición
+        onEditEnd?.(); 
       }
     } catch (err) {
       console.error('Error en el submit de la tabla', err);
