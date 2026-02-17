@@ -8,7 +8,7 @@ export default function ButtonPrimary({ children, onClick, type = 'button', clas
       className={`btn btn-primary ${className}`}
       onClick={onClick}
     >
-      {Icon && <Icon style={{ marginRight: children ? '0.5rem' : 0 }} />}
+      {Icon && <Icon />}
       {children}
     </button>
   );

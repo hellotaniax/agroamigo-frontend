@@ -8,7 +8,7 @@ export default function ButtonDanger({ children, onClick, type = 'button', class
       className={`btn btn-danger ${className}`}
       onClick={onClick}
     >
-      {Icon && <Icon style={{ marginRight: children ? '0.5rem' : 0 }} />}
+      {Icon && <Icon />}
       {children}
     </button>
   );

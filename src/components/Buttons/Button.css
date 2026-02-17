@@ -11,10 +11,26 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+.btn {
+  /* prevent buttons from growing/shrinking in flex containers */
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  /* avoid text wrapping that breaks layout on odd aspect ratios */
+  white-space: nowrap;
+}
+
 .btn > svg {
   display: inline-block;
   vertical-align: middle;
+  /* make icon size predictable and avoid unexpected scaling */
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  margin-right: 0.5rem;
 }
+
+.btn .me-1 { margin-right: 0.5rem; }
+.btn .ms-1 { margin-left: 0.25rem; }
 
 .btn-primary {
   background-color: #0d6efd;

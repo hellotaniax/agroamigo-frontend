@@ -8,7 +8,7 @@ export default function ButtonSecondary({ children, onClick, type = 'button', cl
       className={`btn btn-secondary ${className}`}
       onClick={onClick}
     >
-      {Icon && <Icon style={{ marginRight: children ? '0.5rem' : 0 }} />}
+      {Icon && <Icon />}
       {children}
     </button>
   );
