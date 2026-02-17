@@ -64,7 +64,6 @@ export default function RecomendacionesPage() {
       }
       if (filter.key === 'priority') {
         return { ...filter, options: [
-          { value: '', label: 'Todas' },
           ...prioridades.map(p => ({ value: p.nombrepri, label: p.nombrepri }))
         ]};
       }
