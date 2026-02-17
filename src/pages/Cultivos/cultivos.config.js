@@ -62,6 +62,7 @@ export const cultivosFiltersConfig = [
  * ===============================
  */
 export const cultivosColumns = [
+  {header: 'ID', accessor: 'idcul'},
   { header: 'Nombre', accessor: 'nombrecul' },
   { header: 'Tipo', accessor: 'tipoNombre' },
   { header: 'Estado', accessor: 'estadoNombre' },
