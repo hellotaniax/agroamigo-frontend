@@ -22,4 +22,5 @@ export const aplicacionesColumns = [
   { header: 'Etapa', accessor: 'etapaNombre' },
   { header: 'Dosis (min - max)', accessor: 'dosisRange' },
   { header: 'Recomendación', accessor: 'recomendacionapl' },
+  {header: 'Estado', accessor: 'estadoNombre' },
 ];
