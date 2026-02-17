@@ -33,7 +33,7 @@ function CuentaRegresiva({ bloqueadoHasta, onExpira }) {
     return () => clearInterval(intervalo);
   }, [calcularSegundos, segundosRestantes]);
 
-  const minutos  = Math.floor(segundosRestantes / 60).toString().padStart(2, '0');
+  const minutos = Math.floor(segundosRestantes / 60).toString().padStart(2, '0');
   const segundos = (segundosRestantes % 60).toString().padStart(2, '0');
 
   return <span className="fw-bold fs-4">{minutos}:{segundos}</span>;
@@ -137,12 +137,15 @@ export default function LoginForm({
             <input
               type="checkbox"
               className="form-check-input"
+              id="remember"
               name="remember"
               checked={formData.remember}
               onChange={handleInputChange}
               disabled={bloqueado}
             />
-            <label className="form-check-label">Guardar sesión</label>
+            <label className="form-check-label" htmlFor="remember" style={{ userSelect: 'none' }}>
+              Guardar sesión
+            </label>
           </div>
         </div>
 
