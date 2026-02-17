@@ -8,12 +8,11 @@ import { useState, useMemo } from 'react';
 
 export default function AplicacionesFertilizantesPage() {
   const [filters, setFilters] = useState({ search: '', forma: '', etapa: '' });
-  
+  const [isEditing, setIsEditing] = useState(false); // ✅ Nuevo estado
 
   const { aplicaciones, loading, addAplicacion, updateAplicacion, reload } = useAplicacionesData();
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState(null);
-
 
   const filtered = useMemo(() => {
     return aplicaciones.filter(a =>
@@ -26,7 +25,7 @@ export default function AplicacionesFertilizantesPage() {
   const handleAdd = async (data) => {
     try {
       setFormError(null);
-      await addAplicacion(data); // El toast se dispara desde el hook
+      await addAplicacion(data);
       setShowForm(false);
     } catch (err) {
       setFormError('Revisa los datos ingresados e intenta de nuevo.');
@@ -34,7 +33,10 @@ export default function AplicacionesFertilizantesPage() {
   };
 
   return (
-    <AdminLayout breadcrumbs={[{ label: 'Aplicaciones de fertilizantes' }]}>
+    <AdminLayout 
+      breadcrumbs={[{ label: 'Aplicaciones de fertilizantes' }]}
+      hideHeader={isEditing} // ✅ Ocultar header cuando se está editando
+    >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Aplicaciones de fertilizantes</h4>
         <AddButton onClick={() => setShowForm(true)}>Agregar aplicación</AddButton>
@@ -55,8 +57,10 @@ export default function AplicacionesFertilizantesPage() {
       <AplicacionesTable
         data={filtered}
         loading={loading}
-        onUpdate={updateAplicacion} // ✅ VITAL para la notificación
+        onUpdate={updateAplicacion}
         onDataChange={reload}
+        onEditStart={() => setIsEditing(true)}  // ✅ Cuando comienza edición
+        onEditEnd={() => setIsEditing(false)}   // ✅ Cuando termina edición
       />
     </AdminLayout>
   );
