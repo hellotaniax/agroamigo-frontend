@@ -5,6 +5,7 @@ import UsuariosTable from './components/UsuariosTable';
 import UsuariosFilter from './components/UsuariosFilter';
 import UsuarioForm from './components/UsuarioForm';
 import { AddButton } from '../../components/Buttons';
+import { hasPermission } from '../../utils/permissions';
 import { usuarioFormConfig, usuariosFiltersConfig } from './usuarios.config';
 
 export default function UsuariosPage() {
@@ -15,7 +16,6 @@ export default function UsuariosPage() {
   // Hook de datos
   const { usuarios, loading, addUsuario, updateUsuario, reload, estados, roles } = useUsuariosData(filters);
 
-  // ✅ CORRECCIÓN 1: Usar useMemo para evitar el Bucle Infinito en el Formulario
   const dynamicFormConfig = useMemo(() => {
     return usuarioFormConfig.map(field => {
       if (field.key === 'idest') {
@@ -26,9 +26,8 @@ export default function UsuariosPage() {
       }
       return field;
     });
-  }, [estados, roles]); // 👈 Solo se recalcula si cambian estados o roles
+  }, [estados, roles]); // 
 
-  // ✅ CORRECCIÓN 2: Usar useMemo para evitar el Bucle Infinito en los Filtros
   const dynamicFiltersConfig = useMemo(() => {
     return usuariosFiltersConfig.map(filter => {
       if (filter.key === 'estado') {
@@ -41,7 +40,6 @@ export default function UsuariosPage() {
     });
   }, [estados, roles]);
 
-  // Si los datos están cargando y no hay nada que mostrar, mostramos loader
   if (loading && usuarios.length === 0) {
     return (
       <AdminLayout breadcrumbs={[{ label: 'Usuarios' }]}>
@@ -57,11 +55,13 @@ export default function UsuariosPage() {
   return (
     <AdminLayout 
       breadcrumbs={[{ label: 'Usuarios' }]}
-      hideHeader={isEditing} // ✅ Ocultar header cuando se está editando
+      hideHeader={isEditing} 
     >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Gestión de Usuarios</h4>
-        <AddButton onClick={() => setShowForm(true)}>Agregar usuario</AddButton>
+        {hasPermission('usuarios', 'create') && (
+          <AddButton onClick={() => setShowForm(true)}>Agregar usuario</AddButton>
+        )}
       </div>
 
       {showForm && (
@@ -84,8 +84,8 @@ export default function UsuariosPage() {
         onUpdate={updateUsuario} 
         onDataChange={reload} 
         configForm={dynamicFormConfig}
-        onEditStart={() => setIsEditing(true)}  // ✅ Cuando comienza edición
-        onEditEnd={() => setIsEditing(false)}   // ✅ Cuando termina edición
+        onEditStart={() => setIsEditing(true)}  
+        onEditEnd={() => setIsEditing(false)}   
       />
     </AdminLayout>
   );

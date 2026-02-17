@@ -3,6 +3,11 @@ export const clearSession = () => {
   localStorage.removeItem('user');
   sessionStorage.removeItem('authToken');
   sessionStorage.removeItem('user');
+  try {
+    window.dispatchEvent(new Event('sessionChanged'));
+  } catch (e) {
+    /* noop for non-browser environments */
+  }
 };
 
 export const saveSession = ({ token, user }, remember = true) => {
@@ -12,6 +17,11 @@ export const saveSession = ({ token, user }, remember = true) => {
   } else {
     sessionStorage.setItem('authToken', token);
     if (user) sessionStorage.setItem('user', JSON.stringify(user));
+  }
+  try {
+    window.dispatchEvent(new Event('sessionChanged'));
+  } catch (e) {
+    /* noop for non-browser environments */
   }
 };
 

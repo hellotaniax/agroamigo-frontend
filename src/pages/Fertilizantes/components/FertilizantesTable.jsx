@@ -6,6 +6,7 @@ import FertilizanteForm from './FertilizanteForm';
 import Modal from '../../../components/Modal';
 import { BiEdit } from 'react-icons/bi';
 import { ButtonPrimary } from '../../../components/Buttons';
+import { hasPermission } from '../../../utils/permissions';
 
 export default function FertilizantesTable({ 
   data, 
@@ -31,19 +32,22 @@ export default function FertilizantesTable({
   });
 
   const rowActions = showActions
-    ? (row) => (
-        <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary 
-            icon={BiEdit} 
-            onClick={() => {
-              setEditingFert(row);
-              onEditStart?.(); // ✅ Notificar que comenzó la edición
-            }}
-          >
-            Editar
-          </ButtonPrimary>
-        </div>
-      )
+    ? (row) => {
+        if (!hasPermission('fertilizantes', 'update')) return null;
+        return (
+          <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+            <ButtonPrimary 
+              icon={BiEdit} 
+              onClick={() => {
+                setEditingFert(row);
+                onEditStart?.(); // ✅ Notificar que comenzó la edición
+              }}
+            >
+              Editar
+            </ButtonPrimary>
+          </div>
+        );
+      }
     : null;
 
   const handleFormClose = () => {

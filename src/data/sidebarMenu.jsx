@@ -6,5 +6,5 @@ export const sidebarMenu = [
   { icon: 'bi-clipboard-check', label: 'Aplicaciones de fertilizantes', to: '/aplicaciones-fertilizantes' },
   { icon: 'bi-chat', label: 'Mensajes', to: '/mensajes' },
   { icon: 'bi-lightbulb', label: 'Recomendaciones', to: '/recomendaciones' },
-  { icon: 'bi-people', label: 'Usuarios', to: '/usuarios' },
+  { icon: 'bi-people', label: 'Usuarios', to: '/usuarios', roles: ['administrador'] },
 ];

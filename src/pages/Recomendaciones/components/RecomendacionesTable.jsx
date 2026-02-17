@@ -6,6 +6,7 @@ import { BiEdit } from 'react-icons/bi';
 import RecomendacionForm from './RecomendacionForm';
 import Modal from '../../../components/Modal';
 import { getBadgeClass } from '../../../utils/badgeStates';
+import { hasPermission } from '../../../utils/permissions';
 
 export default function RecomendacionesTable({ 
   data, 
@@ -36,19 +37,22 @@ export default function RecomendacionesTable({
   });
 
   const rowActions = showActions
-    ? (row) => (
-        <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary 
-            icon={BiEdit} 
-            onClick={() => {
-              setEditingRec(row);
-              onEditStart?.(); // ✅ Notificar que comenzó la edición
-            }}
-          >
-            Editar
-          </ButtonPrimary>
-        </div>
-      )
+    ? (row) => {
+        if (!hasPermission('recomendaciones', 'update')) return null;
+        return (
+          <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+            <ButtonPrimary 
+              icon={BiEdit} 
+              onClick={() => {
+                setEditingRec(row);
+                onEditStart?.(); // ✅ Notificar que comenzó la edición
+              }}
+            >
+              Editar
+            </ButtonPrimary>
+          </div>
+        );
+      }
     : null;
 
   const handleFormClose = () => {

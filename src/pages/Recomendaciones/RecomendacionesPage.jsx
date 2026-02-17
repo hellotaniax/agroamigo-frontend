@@ -4,6 +4,7 @@ import RecomendacionesTable from './components/RecomendacionesTable';
 import RecomendacionesFilter from './components/RecomendacionesFilter';
 import RecomendacionForm from './components/RecomendacionForm';
 import { AddButton } from '../../components/Buttons';
+import { hasPermission } from '../../utils/permissions';
 import { useState, useMemo } from 'react'; 
 
 // Importamos las constantes de configuración estática
@@ -117,7 +118,9 @@ export default function RecomendacionesPage() {
     >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Lista de Recomendaciones</h4>
-        <AddButton onClick={() => setShowForm(true)}>Agregar recomendación</AddButton>
+        {hasPermission('recomendaciones', 'create') && (
+          <AddButton onClick={() => setShowForm(true)}>Agregar recomendación</AddButton>
+        )}
       </div>
 
       {showForm && (

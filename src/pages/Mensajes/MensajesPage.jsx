@@ -5,6 +5,7 @@ import MensajesTable from './components/MensajesTable';
 import MensajesFilter from './components/MensajesFilter';
 import MensajeForm from './components/MensajeForm';
 import { AddButton } from '../../components/Buttons';
+import { hasPermission } from '../../utils/permissions';
 import { mensajeFormConfig } from './mensajes.config';
 
 export default function MensajesPage() {
@@ -70,9 +71,11 @@ export default function MensajesPage() {
       {/* Header con título y botón */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Lista de Mensajes</h4>
-        <AddButton onClick={() => setShowForm(true)}>
-          Agregar mensaje
-        </AddButton>
+        {hasPermission('mensajes', 'create') && (
+          <AddButton onClick={() => setShowForm(true)}>
+            Agregar mensaje
+          </AddButton>
+        )}
       </div>
 
       {/* Formulario inline para agregar */}

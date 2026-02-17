@@ -5,6 +5,7 @@ import AplicacionForm from './AplicacionForm';
 import Modal from '../../../components/Modal';
 import { BiEdit } from 'react-icons/bi';
 import { ButtonPrimary } from '../../../components/Buttons';
+import { hasPermission } from '../../../utils/permissions';
 
 export default function AplicacionesTable({ 
   data, 
@@ -21,19 +22,24 @@ export default function AplicacionesTable({
     return col;
   });
 
-  const rowActions = showActions ? (row) => (
-    <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-      <ButtonPrimary 
-        icon={BiEdit} 
-        onClick={() => {
-          setEditing(row);
-          onEditStart?.(); // ✅ Notificar que comenzó la edición
-        }}
-      >
-        Editar
-      </ButtonPrimary>
-    </div>
-  ) : null;
+  const rowActions = showActions
+    ? (row) => {
+        if (!hasPermission('aplicacionesfertilizantes', 'update')) return null;
+        return (
+          <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+            <ButtonPrimary 
+              icon={BiEdit} 
+              onClick={() => {
+                setEditing(row);
+                onEditStart?.(); // ✅ Notificar que comenzó la edición
+              }}
+            >
+              Editar
+            </ButtonPrimary>
+          </div>
+        );
+      }
+    : null;
 
   const handleClose = () => {
     setEditing(null);

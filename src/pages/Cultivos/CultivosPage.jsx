@@ -5,6 +5,7 @@ import CultivosTable from './components/CultivosTable';
 import CultivosFilter from './components/CultivosFilter';
 import CultivoForm from './components/CultivoForm';
 import { AddButton } from '../../components/Buttons';
+import { hasPermission } from '../../utils/permissions';
 
 export default function CultivosPage() {
   const { cultivos, loading, addCultivo, updateCultivo, reload } = useCultivosData();
@@ -39,7 +40,9 @@ export default function CultivosPage() {
     >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Lista de Cultivos</h4>
-        <AddButton onClick={() => setShowForm(true)}>Agregar cultivo</AddButton>
+        {hasPermission('cultivos', 'create') && (
+          <AddButton onClick={() => setShowForm(true)}>Agregar cultivo</AddButton>
+        )}
       </div>
 
       {showForm && (

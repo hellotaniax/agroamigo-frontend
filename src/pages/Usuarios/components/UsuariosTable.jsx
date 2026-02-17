@@ -6,6 +6,7 @@ import { BiEdit } from 'react-icons/bi';
 import UsuarioForm from './UsuarioForm';
 import Modal from '../../../components/Modal';
 import { getBadgeClass } from '../../../utils/badgeStates';
+import { hasPermission } from '../../../utils/permissions';
 
 export default function UsuariosTable({ 
   data, 
@@ -34,19 +35,22 @@ export default function UsuariosTable({
     return col;
   });
 
-  const rowActions = (row) => (
-    <div className="table-row-actions">
-      <ButtonPrimary 
-        icon={BiEdit} 
-        onClick={() => {
-          setEditing(row);
-          onEditStart?.(); // ✅ Notificar que comenzó la edición
-        }}
-      >
-        Editar
-      </ButtonPrimary>
-    </div>
-  );
+  const rowActions = (row) => {
+    if (!hasPermission('usuarios', 'update')) return null;
+    return (
+      <div className="table-row-actions">
+        <ButtonPrimary 
+          icon={BiEdit} 
+          onClick={() => {
+            setEditing(row);
+            onEditStart?.(); // ✅ Notificar que comenzó la edición
+          }}
+        >
+          Editar
+        </ButtonPrimary>
+      </div>
+    );
+  };
 
   const handleFormClose = () => {
     setEditing(null);

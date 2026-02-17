@@ -2,7 +2,15 @@ import './TableCard.css';
 import { Spinner } from 'react-bootstrap';
 
 export default function TableCard({ title, columns, data, loading, rowActions }) {
-  const colSpan = columns.length + (rowActions ? 1 : 0);
+  // Precompute rendered actions for each row so we can determine
+  // if any action exists and avoid calling rowActions twice.
+  const actionsForRows = rowActions && Array.isArray(data)
+    ? data.map(row => rowActions(row))
+    : [];
+
+  const hasAnyActions = actionsForRows.some(a => a !== null && a !== undefined);
+
+  const colSpan = columns.length + (hasAnyActions ? 1 : 0);
 
   return (
     <div className="table-card">
@@ -14,7 +22,7 @@ export default function TableCard({ title, columns, data, loading, rowActions })
               {columns.map(col => (
                 <th key={col.accessor} scope="col">{col.header}</th>
               ))}
-              {rowActions && <th scope="col">Acciones</th>}
+              {hasAnyActions && <th scope="col">Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -32,9 +40,9 @@ export default function TableCard({ title, columns, data, loading, rowActions })
                 </td>
               </tr>
             ) : (
-              data.map(row => (
+              data.map((row, idx) => (
                 <tr 
-                  key={row.id || row.idcul || row.idfer || row.idrec || JSON.stringify(row)} 
+                  key={row.id || row.idcul || row.idfer || row.idrec || JSON.stringify(row) || idx} 
                   className="table-row-hover"
                 >
                   {columns.map(col => (
@@ -42,9 +50,9 @@ export default function TableCard({ title, columns, data, loading, rowActions })
                       {col.render ? col.render(row) : row[col.accessor]}
                     </td>
                   ))}
-                  {rowActions && (
+                  {hasAnyActions && (
                     <td className="table-row-actions">
-                      {rowActions(row)}
+                      {actionsForRows[idx]}
                     </td>
                   )}
                 </tr>

@@ -5,6 +5,7 @@ import FertilizantesTable from './components/FertilizantesTable';
 import FertilizantesFilter from './components/FertilizantesFilter';
 import FertilizanteForm from './components/FertilizanteForm';
 import { AddButton } from '../../components/Buttons';
+import { hasPermission } from '../../utils/permissions';
 
 export default function FertilizantesPage() {
   const [filters, setFilters] = useState({ search: '', type: '', state: '' });
@@ -40,7 +41,9 @@ export default function FertilizantesPage() {
     >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Lista de Fertilizantes</h4>
-        <AddButton onClick={() => setShowForm(true)}>Agregar fertilizante</AddButton>
+        {hasPermission('fertilizantes', 'create') && (
+          <AddButton onClick={() => setShowForm(true)}>Agregar fertilizante</AddButton>
+        )}
       </div>
 
       {showForm && (

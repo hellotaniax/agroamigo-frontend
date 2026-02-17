@@ -6,6 +6,7 @@ import { BiEdit } from 'react-icons/bi';
 import MensajeForm from './MensajeForm';
 import Modal from '../../../components/Modal';
 import { getBadgeClass } from '../../../utils/badgeStates';
+import { hasPermission } from '../../../utils/permissions';
 
 export default function MensajesTable({ 
   data, 
@@ -31,19 +32,22 @@ export default function MensajesTable({
   });
 
   const rowActions = showActions
-    ? (row) => (
-        <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary 
-            icon={BiEdit} 
-            onClick={() => {
-              setEditingMensaje(row);
-              onEditStart?.(); // ✅ Notificar que comenzó la edición
-            }}
-          >
-            Editar
-          </ButtonPrimary>
-        </div>
-      )
+    ? (row) => {
+        if (!hasPermission('mensajes', 'update')) return null;
+        return (
+          <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+            <ButtonPrimary 
+              icon={BiEdit} 
+              onClick={() => {
+                setEditingMensaje(row);
+                onEditStart?.(); // ✅ Notificar que comenzó la edición
+              }}
+            >
+              Editar
+            </ButtonPrimary>
+          </div>
+        );
+      }
     : null;
 
   const handleFormClose = () => {

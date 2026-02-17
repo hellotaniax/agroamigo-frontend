@@ -4,6 +4,7 @@ import AplicacionesTable from './components/AplicacionesTable';
 import AplicacionesFilter from './components/AplicacionesFilter';
 import AplicacionForm from './components/AplicacionForm';
 import { AddButton } from '../../components/Buttons';
+import { hasPermission } from '../../utils/permissions';
 import { useState, useMemo } from 'react';
 
 export default function AplicacionesFertilizantesPage() {
@@ -39,7 +40,9 @@ export default function AplicacionesFertilizantesPage() {
     >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Aplicaciones de fertilizantes</h4>
-        <AddButton onClick={() => setShowForm(true)}>Agregar aplicación</AddButton>
+        {hasPermission('aplicacionesfertilizantes', 'create') && (
+          <AddButton onClick={() => setShowForm(true)}>Agregar aplicación</AddButton>
+        )}
       </div>
 
       {showForm && (

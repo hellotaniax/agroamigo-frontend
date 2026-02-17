@@ -6,6 +6,7 @@ import CultivoForm from './CultivoForm';
 import Modal from '../../../components/Modal';
 import { BiEdit } from 'react-icons/bi';
 import { ButtonPrimary } from '../../../components/Buttons';
+import { hasPermission } from '../../../utils/permissions';
 
 export default function CultivosTable({ 
   data, 
@@ -33,19 +34,22 @@ export default function CultivosTable({
   });
 
   const rowActions = showActions
-    ? (row) => (
-        <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary 
-            icon={BiEdit} 
-            onClick={() => {
-              setEditingCultivo(row);
-              onEditStart?.(); // ✅ Notificar que comenzó la edición
-            }}
-          >
-            Editar
-          </ButtonPrimary>
-        </div>
-      )
+    ? (row) => {
+        if (!hasPermission('cultivos', 'update')) return null;
+        return (
+          <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+            <ButtonPrimary 
+              icon={BiEdit} 
+              onClick={() => {
+                setEditingCultivo(row);
+                onEditStart?.(); // ✅ Notificar que comenzó la edición
+              }}
+            >
+              Editar
+            </ButtonPrimary>
+          </div>
+        );
+      }
     : null;
 
   const handleFormClose = () => {
