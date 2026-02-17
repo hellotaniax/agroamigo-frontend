@@ -59,7 +59,6 @@ export default function RecomendacionesPage() {
     return recomendacionesFiltersConfig.map(filter => {
       if (filter.key === 'estado') {
         return { ...filter, options: [
-          { value: '', label: 'Todos' },
           ...estados.map(e => ({ value: e.nombreest, label: e.nombreest }))
         ]};
       }
