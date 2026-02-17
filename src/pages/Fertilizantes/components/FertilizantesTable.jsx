@@ -4,11 +4,19 @@ import { fertilizantesColumns } from '../fertilizantes.config';
 import { getBadgeClass } from '../../../utils/badgeStates';
 import FertilizanteForm from './FertilizanteForm';
 import Modal from '../../../components/Modal';
-import fertilizantesService from '../../../services/fertilizantes.service';
 import { BiEdit } from 'react-icons/bi';
 import { ButtonPrimary } from '../../../components/Buttons';
 
-export default function FertilizantesTable({ data, loading, onDataChange, onUpdate, onDelete, showActions = true }) {
+export default function FertilizantesTable({ 
+  data, 
+  loading, 
+  onDataChange, 
+  onUpdate, 
+  onDelete, 
+  showActions = true,
+  onEditStart,  // ✅ Nueva prop
+  onEditEnd     // ✅ Nueva prop
+}) {
   const [editingFert, setEditingFert] = useState(null);
 
   const renderEstado = (row) => (
@@ -25,14 +33,23 @@ export default function FertilizantesTable({ data, loading, onDataChange, onUpda
   const rowActions = showActions
     ? (row) => (
         <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary icon={BiEdit} onClick={() => setEditingFert(row)}>
+          <ButtonPrimary 
+            icon={BiEdit} 
+            onClick={() => {
+              setEditingFert(row);
+              onEditStart?.(); // ✅ Notificar que comenzó la edición
+            }}
+          >
             Editar
           </ButtonPrimary>
         </div>
       )
     : null;
 
-  const handleFormClose = () => setEditingFert(null);
+  const handleFormClose = () => {
+    setEditingFert(null);
+    onEditEnd?.(); // ✅ Notificar que terminó la edición
+  };
 
   const handleFormSubmit = async (updatedFert) => {
     try {
@@ -40,6 +57,7 @@ export default function FertilizantesTable({ data, loading, onDataChange, onUpda
         await onUpdate(editingFert.idfer, updatedFert);
       }
       setEditingFert(null);
+      onEditEnd?.(); // ✅ Notificar que terminó la edición
     } catch (error) {
       console.error('Error en submit tabla:', error);
     }

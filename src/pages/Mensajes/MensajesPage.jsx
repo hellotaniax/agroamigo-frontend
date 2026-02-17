@@ -14,6 +14,7 @@ export default function MensajesPage() {
   const [filters, setFilters] = useState({ search: '', estado: '' });
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false); // ✅ Nuevo estado
 
   // =========================
   // Hook de datos
@@ -36,7 +37,7 @@ export default function MensajesPage() {
         return {
           ...field,
           options: [
-            ...estados.map(e => ({ value: String(e.idest), label: e.nombreest })) // Aseguramos que el value sea string
+            ...estados.map(e => ({ value: String(e.idest), label: e.nombreest }))
           ]
         };
       }
@@ -52,7 +53,6 @@ export default function MensajesPage() {
       setFormError(null);
       await addMensaje(data);
       setShowForm(false);
-      // reload(); // Opcional, el hook ya debería tener el reload dentro del addMensaje
     } catch (error) {
       setFormError('Error al guardar el mensaje. Inténtalo de nuevo.');
       console.error(error);
@@ -63,7 +63,10 @@ export default function MensajesPage() {
   // Render
   // =========================
   return (
-    <AdminLayout breadcrumbs={[{ label: 'Mensajes' }]}>
+    <AdminLayout 
+      breadcrumbs={[{ label: 'Mensajes' }]}
+      hideHeader={isEditing} // ✅ Ocultar header cuando se está editando
+    >
       {/* Header con título y botón */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Lista de Mensajes</h4>
@@ -102,9 +105,11 @@ export default function MensajesPage() {
       <MensajesTable 
         data={mensajes}
         loading={loading}
-        onUpdate={updateMensaje} // 
+        onUpdate={updateMensaje}
         onDataChange={reload}
         configForm={formConfigWithOptions}
+        onEditStart={() => setIsEditing(true)}  // ✅ Cuando comienza edición
+        onEditEnd={() => setIsEditing(false)}   // ✅ Cuando termina edición
       />
     </AdminLayout>
   );

@@ -27,6 +27,7 @@ export default function RecomendacionesPage() {
   const [filters, setFilters] = useState({ search: '', estado: '', priority: '' });
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false); // ✅ Nuevo estado
 
   /**
    * ✅ CORRECCIÓN 1: Usar useMemo para la configuración del Formulario
@@ -110,7 +111,10 @@ export default function RecomendacionesPage() {
   }
 
   return (
-    <AdminLayout breadcrumbs={[{ label: 'Recomendaciones' }]}>
+    <AdminLayout 
+      breadcrumbs={[{ label: 'Recomendaciones' }]}
+      hideHeader={isEditing} // ✅ Ocultar header cuando se está editando
+    >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Lista de Recomendaciones</h4>
         <AddButton onClick={() => setShowForm(true)}>Agregar recomendación</AddButton>
@@ -145,7 +149,9 @@ export default function RecomendacionesPage() {
         onDelete={deleteRecomendacion} 
         onUpdate={updateRecomendacion} 
         onDataChange={reload} 
-        configForm={dynamicFormConfig} 
+        configForm={dynamicFormConfig}
+        onEditStart={() => setIsEditing(true)}  // ✅ Cuando comienza edición
+        onEditEnd={() => setIsEditing(false)}   // ✅ Cuando termina edición
       />
     </AdminLayout>
   );

@@ -7,7 +7,15 @@ import UsuarioForm from './UsuarioForm';
 import Modal from '../../../components/Modal';
 import { getBadgeClass } from '../../../utils/badgeStates';
 
-export default function UsuariosTable({ data, loading, onUpdate, onDataChange, configForm }) {
+export default function UsuariosTable({ 
+  data, 
+  loading, 
+  onUpdate, 
+  onDataChange, 
+  configForm,
+  onEditStart,  // ✅ Nueva prop
+  onEditEnd     // ✅ Nueva prop
+}) {
   const [editing, setEditing] = useState(null);
 
   const renderEstado = (row) => (
@@ -28,11 +36,22 @@ export default function UsuariosTable({ data, loading, onUpdate, onDataChange, c
 
   const rowActions = (row) => (
     <div className="table-row-actions">
-      <ButtonPrimary icon={BiEdit} onClick={() => setEditing(row)}>
+      <ButtonPrimary 
+        icon={BiEdit} 
+        onClick={() => {
+          setEditing(row);
+          onEditStart?.(); // ✅ Notificar que comenzó la edición
+        }}
+      >
         Editar
       </ButtonPrimary>
     </div>
   );
+
+  const handleFormClose = () => {
+    setEditing(null);
+    onEditEnd?.(); // ✅ Notificar que terminó la edición
+  };
 
   const handleFormSubmit = async (formData) => {
     try {
@@ -40,6 +59,7 @@ export default function UsuariosTable({ data, loading, onUpdate, onDataChange, c
         await onUpdate(editing.idusu, formData);
       }
       setEditing(null);
+      onEditEnd?.(); // ✅ Notificar que terminó la edición
       if (onDataChange) await onDataChange();
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
@@ -57,11 +77,11 @@ export default function UsuariosTable({ data, loading, onUpdate, onDataChange, c
       />
 
       {editing && (
-        <Modal onClose={() => setEditing(null)}>
+        <Modal onClose={handleFormClose}>
           <UsuarioForm
             initialValues={editing}
             config={configForm}
-            onCancel={() => setEditing(null)}
+            onCancel={handleFormClose}
             onSubmit={handleFormSubmit}
           />
         </Modal>

@@ -7,8 +7,16 @@ import MensajeForm from './MensajeForm';
 import Modal from '../../../components/Modal';
 import { getBadgeClass } from '../../../utils/badgeStates';
 
-// ✅ Agregamos 'onUpdate' a las props del componente
-export default function MensajesTable({ data, loading, onDataChange, onUpdate, configForm, showActions = true }) {
+export default function MensajesTable({ 
+  data, 
+  loading, 
+  onDataChange, 
+  onUpdate, 
+  configForm, 
+  showActions = true,
+  onEditStart,  // ✅ Nueva prop
+  onEditEnd     // ✅ Nueva prop
+}) {
   const [editingMensaje, setEditingMensaje] = useState(null);
 
   const renderEstado = (row) => (
@@ -25,14 +33,23 @@ export default function MensajesTable({ data, loading, onDataChange, onUpdate, c
   const rowActions = showActions
     ? (row) => (
         <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary icon={BiEdit} onClick={() => setEditingMensaje(row)}>
+          <ButtonPrimary 
+            icon={BiEdit} 
+            onClick={() => {
+              setEditingMensaje(row);
+              onEditStart?.(); // ✅ Notificar que comenzó la edición
+            }}
+          >
             Editar
           </ButtonPrimary>
         </div>
       )
     : null;
 
-  const handleFormClose = () => setEditingMensaje(null);
+  const handleFormClose = () => {
+    setEditingMensaje(null);
+    onEditEnd?.(); // ✅ Notificar que terminó la edición
+  };
 
   // =========================
   // Submit del formulario (Corregido para mostrar notificación)
@@ -40,13 +57,10 @@ export default function MensajesTable({ data, loading, onDataChange, onUpdate, c
   const handleFormSubmit = async (updatedMensaje) => {
     try {
       if (editingMensaje && onUpdate) {
-        // ✅ CAMBIO CLAVE: Llamamos a la prop que viene del Hook
-        // Esto activará el toast.promise de éxito/error/cargando
         await onUpdate(editingMensaje.idmen, updatedMensaje);
       }
-
       setEditingMensaje(null);
-      // No necesitas llamar a onDataChange() porque el Hook ya recarga los datos solo
+      onEditEnd?.(); // ✅ Notificar que terminó la edición
     } catch (error) {
       console.error('Error actualizando mensaje:', error);
     }

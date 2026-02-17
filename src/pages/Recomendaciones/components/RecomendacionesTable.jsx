@@ -5,11 +5,18 @@ import { ButtonPrimary } from '../../../components/Buttons';
 import { BiEdit } from 'react-icons/bi'; 
 import RecomendacionForm from './RecomendacionForm';
 import Modal from '../../../components/Modal';
-// ❌ Eliminamos la importación directa del servicio para usar la prop onUpdate
 import { getBadgeClass } from '../../../utils/badgeStates';
 
-// ✅ Agregamos 'onUpdate' a las props del componente
-export default function RecomendacionesTable({ data, loading, onDataChange, onUpdate, configForm, showActions = true }) {
+export default function RecomendacionesTable({ 
+  data, 
+  loading, 
+  onDataChange, 
+  onUpdate, 
+  configForm, 
+  showActions = true,
+  onEditStart,  // ✅ Nueva prop
+  onEditEnd     // ✅ Nueva prop
+}) {
   const [editingRec, setEditingRec] = useState(null);
 
   const renderEstado = (row) => (
@@ -31,14 +38,23 @@ export default function RecomendacionesTable({ data, loading, onDataChange, onUp
   const rowActions = showActions
     ? (row) => (
         <div className="table-row-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-          <ButtonPrimary icon={BiEdit} onClick={() => setEditingRec(row)}>
+          <ButtonPrimary 
+            icon={BiEdit} 
+            onClick={() => {
+              setEditingRec(row);
+              onEditStart?.(); // ✅ Notificar que comenzó la edición
+            }}
+          >
             Editar
           </ButtonPrimary>
         </div>
       )
     : null;
 
-  const handleFormClose = () => setEditingRec(null);
+  const handleFormClose = () => {
+    setEditingRec(null);
+    onEditEnd?.(); // ✅ Notificar que terminó la edición
+  };
 
   // =========================
   // Submit del formulario (Corregido)
@@ -46,16 +62,11 @@ export default function RecomendacionesTable({ data, loading, onDataChange, onUp
   const handleFormSubmit = async (updatedRec) => {
     try {
       if (editingRec && onUpdate) {
-        // ✅ CAMBIO CLAVE: Usamos la función que viene del Hook a través de props
-        // Esto activará el toast.promise que configuramos antes
         await onUpdate(editingRec.idrec, updatedRec);
       }
-
       setEditingRec(null);
-      // Ya no es estrictamente necesario hacer await onDataChange() aquí 
-      // porque el Hook ya hace el reload interno, pero se puede dejar por seguridad.
+      onEditEnd?.(); // ✅ Notificar que terminó la edición
     } catch (error) {
-      // El error ya lo maneja el toast, pero lo registramos en consola
       console.error('Error en el submit de tabla:', error);
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'; // 👈 IMPORTANTE: Añadir useMemo
+import React, { useState, useMemo } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import useUsuariosData from './useUsuariosData';
 import UsuariosTable from './components/UsuariosTable';
@@ -10,6 +10,7 @@ import { usuarioFormConfig, usuariosFiltersConfig } from './usuarios.config';
 export default function UsuariosPage() {
   const [filters, setFilters] = useState({ search: '', estado: '', rol: '' });
   const [showForm, setShowForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // ✅ Nuevo estado
   
   // Hook de datos
   const { usuarios, loading, addUsuario, updateUsuario, reload, estados, roles } = useUsuariosData(filters);
@@ -54,7 +55,10 @@ export default function UsuariosPage() {
   }
 
   return (
-    <AdminLayout breadcrumbs={[{ label: 'Usuarios' }]}>
+    <AdminLayout 
+      breadcrumbs={[{ label: 'Usuarios' }]}
+      hideHeader={isEditing} // ✅ Ocultar header cuando se está editando
+    >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-semibold">Gestión de Usuarios</h4>
         <AddButton onClick={() => setShowForm(true)}>Agregar usuario</AddButton>
@@ -79,7 +83,9 @@ export default function UsuariosPage() {
         loading={loading} 
         onUpdate={updateUsuario} 
         onDataChange={reload} 
-        configForm={dynamicFormConfig} 
+        configForm={dynamicFormConfig}
+        onEditStart={() => setIsEditing(true)}  // ✅ Cuando comienza edición
+        onEditEnd={() => setIsEditing(false)}   // ✅ Cuando termina edición
       />
     </AdminLayout>
   );
