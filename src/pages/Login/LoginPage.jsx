@@ -17,6 +17,10 @@ export default function LoginPage() {
     toggleShowPassword,
     clearError,
     isFormValid,
+    // ── NUEVO ──
+    bloqueado,
+    bloqueadoHasta,
+    handleDesbloqueo,
   } = useLogin();
 
   return (
@@ -40,14 +44,19 @@ export default function LoginPage() {
             error={error}
             clearError={clearError}
             isFormValid={isFormValid}
+            bloqueado={bloqueado}
+            bloqueadoHasta={bloqueadoHasta}
+            handleDesbloqueo={handleDesbloqueo}
           />
 
-          {/* Enlace de recuperación de contraseña */}
-          <div className="text-center mt-3">
-            <Link to="/forgot-password" className="text-muted forgot-password-link">
-              ¿Olvidaste tu contraseña?
-            </Link>
-          </div>
+          {/* Enlace de recuperación de contraseña — oculto si está bloqueado */}
+          {!bloqueado && (
+            <div className="text-center mt-3">
+              <Link to="/forgot-password" className="text-muted forgot-password-link">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>
